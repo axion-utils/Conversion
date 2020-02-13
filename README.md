@@ -4,7 +4,7 @@
 
 This package is intended to replace System.Convert. Some key differences include:
 1. Custom conversion is supported through inheritance. Only null and typeof(object) are treated as special cases. 
-See [TypeConvertEx](https://github.com/axion-utils/Conversion/blob/master/TypeConvert/TypeConvertEx.cs) for an example of how to do this.
+See [TypeConvertEx](https://github.com/axion-utils/Conversion/blob/master/Conversion/TypeConvertEx.cs) for an example of how to do this.
 2. Exceptions can be prevented without using a try catch.
 3. Functions can be reused when converting lists of objects.
 4. TypeConvert.CanConvertTo is more accurate than System.ComponentModel.TypeConverter.CanConvertTo.
