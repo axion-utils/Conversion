@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0;net461</TargetFrameworks>
+    <AssemblyName>Axion.Conversion</AssemblyName>
+    <Version>1.0.0</Version>
+    <Authors>Wesley Hamilton</Authors>
+    <Description>A customizable alternative to C# System.Convert</Description>
+    <NeutralLanguage>en-us</NeutralLanguage>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>convert cast transform</PackageTags>
+    <PackageLicense>Apache-2.0</PackageLicense>
+    <PackageProjectUrl>https://github.com/ffhighwind/TypeConvert</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright (c) 2020 Wesley Hamilton</Copyright>
+    <RepositoryUrl>https://github.com/ffhighwind/TypeConvert</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <DelaySign>false</DelaySign>
+    <RootNamespace>Axion</RootNamespace>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <ProjectGuid>{6C8E3736-58B0-4F14-BBA6-6107FEED628F}</ProjectGuid>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <PackageIconUrl />
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>bin\lib\</OutputPath>
+    <DocumentationFile>bin\lib\TypeConvert.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <DefineConstants>NETCOREAPP;NETCOREAPP2_0</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
+    <DefineConstants>NETFRAMEWORK;NET461</DefineConstants>
+  </PropertyGroup>
+
+</Project>
