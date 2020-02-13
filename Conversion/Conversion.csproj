@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0;net40</TargetFrameworks>
     <AssemblyName>Axion.Conversion</AssemblyName>
     <Version>1.0.0</Version>
     <Authors>Wesley Hamilton</Authors>
@@ -9,13 +9,13 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>convert cast transform</PackageTags>
     <PackageLicense>Apache-2.0</PackageLicense>
-    <PackageProjectUrl>https://github.com/ffhighwind/TypeConvert</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/axion-utils/Conversion</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Copyright (c) 2020 Wesley Hamilton</Copyright>
-    <RepositoryUrl>https://github.com/ffhighwind/TypeConvert</RepositoryUrl>
+    <RepositoryUrl>https://github.com/axion-utils/Conversion</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
     <DelaySign>false</DelaySign>
-    <RootNamespace>Axion</RootNamespace>
+    <RootNamespace>Axion.Conversion</RootNamespace>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
@@ -25,11 +25,10 @@
     <PackageIconUrl />
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <Reference Include="System" />
-    <Reference Include="System.Core" />
+	<Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -48,7 +47,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\lib\</OutputPath>
-    <DocumentationFile>bin\lib\TypeConvert.xml</DocumentationFile>
+    <DocumentationFile>bin\lib\Axion.Conversion.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
@@ -57,8 +56,8 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <DefineConstants>NETSTANDARD;NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <DefineConstants>NETFRAMEWORK;NET461</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+    <DefineConstants>NETFRAMEWORK;NET40</DefineConstants>
   </PropertyGroup>
 
 </Project>

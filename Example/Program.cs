@@ -1,13 +1,13 @@
 ﻿using System;
 using Axion.Conversion;
 
-namespace TypeConvertExample
+namespace Axion
 {
 public static class Program
 {
 public static void Main()
 {
-	// Equivilent to TypeConvert.Default
+	// equivalent to TypeConvert.Default.ChangeType
 	object value = TypeConvert.ChangeType("1.5", typeof(double));
 	Console.WriteLine(value + " " + value.GetType().Name); // 1.5 Double
 

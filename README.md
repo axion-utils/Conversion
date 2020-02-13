@@ -1,5 +1,7 @@
 # Introduction
 
+[Nuget: Axion.Conversion](https://www.nuget.org/packages/Axion.Conversion/)
+
 This package is intended to replace System.Convert. Some key differences include:
 1. Convert functions can be changed through inheritance. Only null and typeof(object) are treated as special cases. 
 See [TypeConvertEx](https://github.com/axion-utils/Conversion/blob/master/TypeConvert/TypeConvertEx.cs) for an example of how to do this.
