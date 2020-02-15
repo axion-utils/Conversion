@@ -33,7 +33,14 @@ namespace Axion.Conversion
 	/// </summary>
 	public class TypeConvert
 	{
+		/// <summary>
+		/// The default <see cref="TypeConvert"/> that throws exceptions for numeric overflow and failed string parsing.
+		/// </summary>
 		public static readonly TypeConvert Default = new TypeConvertEx(false, true);
+
+		/// <summary>
+		/// The default <see cref="TypeConvert"/> that does not throw exceptions and allows numeric overflow.
+		/// </summary>
 		public static readonly TypeConvert Safe = new TypeConvertEx(true, true);
 
 		/// <summary>
@@ -43,9 +50,9 @@ namespace Axion.Conversion
 		/// <param name="output">The <see cref="Type"/> to convert to.</param>
 		/// <param name="safe">Determines if most exceptions should be prevented.</param>
 		/// <returns>The result of the conversion or <see langword="null"/> on failure.</returns>
-		public static object ChangeType(object value, Type conversionType, bool safe = false)
+		public static object ChangeType(object value, Type output, bool safe = false)
 		{
-			return safe ? Safe.ChangeType(value, conversionType) : Default.ChangeType(value, conversionType);
+			return safe ? Safe.ChangeType(value, output) : Default.ChangeType(value, output);
 		}
 
 		/// <summary>
@@ -94,7 +101,7 @@ namespace Axion.Conversion
 			return Default.CanConvert(input, output);
 		}
 
-		private readonly Func<object, object>[] invalidconverters = new Func<object, object>[19];
+		private static readonly Func<object, object>[] invalidConverters = new Func<object, object>[19];
 		private readonly Func<object, object>[] dbNullConverters = new Func<object, object>[19];
 		private readonly Func<object, object>[] boolConverters = new Func<object, object>[19];
 		private readonly Func<object, object>[] charConverters = new Func<object, object>[19];
@@ -111,15 +118,24 @@ namespace Axion.Conversion
 		private readonly Func<object, object>[] decimalConverters = new Func<object, object>[19];
 		private readonly Func<object, object>[] dateTimeConverters = new Func<object, object>[19];
 		private readonly Func<object, object>[] stringConverters = new Func<object, object>[19];
-
 		private readonly Func<object, object>[][] converterArray = new Func<object, object>[19][];
 		private readonly Func<object, object>[] outputConverters = new Func<object, object>[19];
+
+		static TypeConvert()
+		{
+			for(int i = 0; i < invalidConverters.Length; i++) {
+				invalidConverters[i] = Conversions.AsNull;
+			}
+		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		protected readonly IDictionary<Tuple<Type, Type>, Func<object, object>> LookupCache; // (INPUT, OUTPUT) unlike everything else
 
+		/// <summary>
+		/// The converter that is returned when an input <see cref="Type"/> cannot be converted to the output <see cref="Type"/>.
+		/// </summary>
 		protected Func<object, object> InvalidConversion => Conversions.AsNull;
 
 		/// <summary>
@@ -176,8 +192,8 @@ namespace Axion.Conversion
 			outputConverters[(int)TypeCode.DateTime] = ToDateTime;
 			outputConverters[(int)TypeCode.String] = ToString;
 
-			converterArray[(int)TypeCode.Empty] = invalidconverters; // Empty = 0
-			converterArray[(int)TypeCode.Object] = invalidconverters; // Object = 1
+			converterArray[(int)TypeCode.Empty] = invalidConverters; // Empty = 0
+			converterArray[(int)TypeCode.Object] = invalidConverters; // Object = 1
 			converterArray[(int)TypeCode.DBNull] = dbNullConverters; // DBNull = 2
 			converterArray[(int)TypeCode.Boolean] = boolConverters; // Boolean = 3
 			converterArray[(int)TypeCode.Char] = charConverters; // Char = 4
@@ -193,7 +209,7 @@ namespace Axion.Conversion
 			converterArray[(int)TypeCode.Double] = doubleConverters; // Double = 14
 			converterArray[(int)TypeCode.Decimal] = decimalConverters; // Decimal = 15
 			converterArray[(int)TypeCode.DateTime] = dateTimeConverters; // DateTime = 16
-			converterArray[17] = invalidconverters;
+			converterArray[17] = invalidConverters;
 			converterArray[(int)TypeCode.String] = stringConverters; // String = 18
 
 			Func<object, object>[][] numericConversions = exceptionSafe ? Conversions.UncheckedConversions : Conversions.CheckedConversions;
@@ -206,7 +222,6 @@ namespace Axion.Conversion
 				}
 			}
 			for (int i = 0; i < 19; i++) {
-				invalidconverters[i] = InvalidConversion;
 				stringConverters[i] = Conversions.ObjectToString;
 				dateTimeConverters[i] = InvalidConversion;
 				dbNullConverters[i] = InvalidConversion;
@@ -626,7 +641,7 @@ namespace Axion.Conversion
 
 		/// <summary>
 		/// Gets or sets the function that converts an <see cref="Object"/> of the given <see cref="Type"/> to the specified output <see cref="Type"/>. 
-		/// <see cref="Conversions.AsNull"/> will be returned for invalid conversions. A <see cref="null"/>
+		/// <see cref="Conversions.AsNull"/> will be returned for invalid conversions. A <see langword="null"/>
 		/// value will remove the conversion or set it to <see cref="Conversions.AsNull"/>.
 		/// </summary>
 		/// <param name="input">The <see cref="Type"/> to convert from.</param>

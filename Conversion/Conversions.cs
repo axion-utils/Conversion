@@ -155,7 +155,7 @@ namespace Axion.Conversion
 				return ObjectToString;
 			Func<object, object> converter;
 			if (input == typeof(string)) {
-				converter = exceptionSafe ? TryParse(input) : Parse(input);
+				converter = exceptionSafe ? TryParse(input, false) : Parse(input, false);
 				if (converter != null)
 					return converter;
 			}
@@ -172,61 +172,61 @@ namespace Axion.Conversion
 		#region Boolean
 		// From Boolean
 		/// <summary>
-		/// Converts <see langword="true"/> to '1' and <see cref="false"/> to '0'.
+		/// Converts <see langword="true"/> to '1' and <see langword="false"/> to '0'.
 		/// </summary>
 		public static readonly Func<object, object> BooleanToChar = (object value) => ((bool)value) ? '1' : '0';
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToSByte = (object value) => ((bool)value) ? (sbyte)1 : (sbyte)0;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToByte = (object value) => ((bool)value) ? (byte)1 : (byte)0;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToInt16 = (object value) => ((bool)value) ? (short)1 : (short)0;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToUInt16 = (object value) => ((bool)value) ? (ushort)1 : (ushort)0;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToInt32 = (object value) => ((bool)value) ? (int)1 : (int)0;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToUInt32 = (object value) => ((bool)value) ? (uint)1U : (uint)0U;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToInt64 = (object value) => ((bool)value) ? (long)1L : (long)0L;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToUInt64 = (object value) => ((bool)value) ? (ulong)1UL : (ulong)0UL;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToSingle = (object value) => ((bool)value) ? (float)1.0f : (float)0.0f;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToDouble = (object value) => ((bool)value) ? (double)1D : (double)0D;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToDecimal = (object value) => ((bool)value) ? (decimal)1M : (decimal)0M;
 		/// <summary>
-		/// Converts <see langword="true"/> to 1 and <see cref="false"/> to 0.
+		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToBigInteger = (object value) => ((bool)value) ? new BigInteger(1) : new BigInteger(0);
 
 		// To Boolean
 		/// <summary>
-		/// Converts '0' and '\0' to <see cref="false"/> and all other values to <see langword="true"/>.
+		/// Converts '0' and '\0' to <see langword="false"/> and all other values to <see langword="true"/>.
 		/// </summary>
 		public static readonly Func<object, object> CharToBoolean = (object value) => {
 			char c = (char)value;
@@ -597,11 +597,12 @@ namespace Axion.Conversion
 		/// Creates a function for parsing the given type from a string.
 		/// </summary>
 		/// <param name="type">The type to parse.</param>
+		/// <param name="ignoreCase">Determines if case should be ignored when parsing enums.</param>
 		/// <returns>A function for parsing the given type from a string.</returns>
-		public static Func<object, object> TryParse(Type type)
+		public static Func<object, object> TryParse(Type type, bool ignoreCase = false)
 		{
 			if (type.IsEnum)
-				return TryParseEnum(type);
+				return TryParseEnum(type, ignoreCase);
 			TypeCode typeCode = Type.GetTypeCode(type);
 			if (typeCode != TypeCode.Object)
 				return TryParseConversions[(int)typeCode];
@@ -801,11 +802,11 @@ namespace Axion.Conversion
 		/// Creates a method for parsing the specified type. If the parse fails then an exception will be thrown.
 		/// </summary>
 		/// <param name="type">The <see cref="Type"/> to create.</param>
-		/// <param name="ignoreCase">Determines if case should be ignored when parsing.</param>
-		public static Func<object, object> Parse(Type type)
+		/// <param name="ignoreCase">Determines if case should be ignored when parsing enums.</param>
+		public static Func<object, object> Parse(Type type, bool ignoreCase)
 		{
 			if (type.IsEnum)
-				return ParseEnum(type);
+				return ParseEnum(type, ignoreCase);
 			TypeCode typeCode = Type.GetTypeCode(type);
 			if (typeCode != TypeCode.Object)
 				return ParseConversions[(int)typeCode];
