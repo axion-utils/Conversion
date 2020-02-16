@@ -651,6 +651,8 @@ namespace Axion.Conversion
 			get {
 				if (output == typeof(object))
 					return Conversions.None;
+				if (input == typeof(object))
+					return this[output];
 				TypeCode outputTypeCode = Type.GetTypeCode(output);
 				if (outputTypeCode > TypeCode.Object) {
 					TypeCode inputTypeCode = Type.GetTypeCode(input);

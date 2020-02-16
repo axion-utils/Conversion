@@ -2,11 +2,11 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp2.0;net40</TargetFrameworks>
     <AssemblyName>Axion.Conversion</AssemblyName>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Wesley Hamilton</Authors>
     <Description>A customizable alternative to C# System.Convert</Description>
     <NeutralLanguage>en-us</NeutralLanguage>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed input = typeof(object).</PackageReleaseNotes>
     <PackageTags>convert cast transform</PackageTags>
     <PackageLicense>Apache-2.0</PackageLicense>
     <PackageProjectUrl>https://github.com/axion-utils/Conversion</PackageProjectUrl>
@@ -17,8 +17,8 @@
     <DelaySign>false</DelaySign>
     <RootNamespace>Axion.Conversion</RootNamespace>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
     <ProjectGuid>{6C8E3736-58B0-4F14-BBA6-6107FEED628F}</ProjectGuid>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
