@@ -36,12 +36,12 @@ namespace Axion.Conversion
 		/// <summary>
 		/// The default <see cref="TypeConvert"/> that throws exceptions for numeric overflow and failed string parsing.
 		/// </summary>
-		public static readonly TypeConvert Default = new TypeConvertEx(false, true);
+		public static readonly TypeConvert Default = new TypeConvertDefault();
 
 		/// <summary>
 		/// The default <see cref="TypeConvert"/> that does not throw exceptions and allows numeric overflow.
 		/// </summary>
-		public static readonly TypeConvert Safe = new TypeConvertEx(true, true);
+		public static readonly TypeConvert Safe = new TypeConvertSafe();
 
 		/// <summary>
 		/// Converts an <see cref="object"/> to the specified <see cref="Type"/>.
@@ -101,37 +101,88 @@ namespace Axion.Conversion
 			return Default.CanConvert(input, output);
 		}
 
-		private static readonly Func<object, object>[] invalidConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] dbNullConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] boolConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] charConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] sbyteConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] byteConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] int16Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] uint16Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] int32Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] uint32Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] int64Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] uint64Converters = new Func<object, object>[19];
-		private readonly Func<object, object>[] singleConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] doubleConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] decimalConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] dateTimeConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[] stringConverters = new Func<object, object>[19];
-		private readonly Func<object, object>[][] converterArray = new Func<object, object>[19][];
-		private readonly Func<object, object>[] outputConverters = new Func<object, object>[19];
-
-		static TypeConvert()
-		{
-			for(int i = 0; i < invalidConverters.Length; i++) {
-				invalidConverters[i] = Conversions.AsNull;
-			}
-		}
+		private readonly Func<object, object>[] invalidConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="DBNull"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] dbNullConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="bool"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] boolConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="char"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] charConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="sbyte"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] sbyteConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="byte"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] byteConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="short"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] int16Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="ushort"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] uint16Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="int"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] int32Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="uint"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] uint32Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="long"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] int64Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="ulong"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] uint64Converters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="float"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] singleConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="double"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] doubleConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="decimal"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] decimalConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="string"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] dateTimeConverters = new Func<object, object>[19];
+		/// <summary>
+		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="string"/>.
+		/// </summary>
+		protected readonly Func<object, object>[] stringConverters = new Func<object, object>[19];
 
 		/// <summary>
-		/// 
+		/// The function returned by <see cref="this[Type]"/> and called by methods such as <see cref="ToBoolean(object)"/>. It should not
+		/// support custom conversions of <see cref="TypeCode.Object"/> or enums.
 		/// </summary>
-		protected readonly IDictionary<Tuple<Type, Type>, Func<object, object>> LookupCache; // (INPUT, OUTPUT) unlike everything else
+		internal readonly Func<object, object>[] outputConverters = new Func<object, object>[19];
+
+		/// <summary>
+		/// An array of converters which can be accessed using Typecodes via [output][input].
+		/// </summary>
+		internal readonly Func<object, object>[][] converterArray = new Func<object, object>[19][];
+
+		/// <summary>
+		/// The cache for custom conversions stored as Tuple.Create(input, output). This will include enum parsing, implicit/explicit casts
+		/// for non-primitive types, and <see cref="System.ComponentModel.TypeConverter"/>.
+		/// </summary>
+		protected readonly IDictionary<Tuple<Type, Type>, Func<object, object>> LookupCache;
 
 		/// <summary>
 		/// The converter that is returned when an input <see cref="Type"/> cannot be converted to the output <see cref="Type"/>.
@@ -139,16 +190,19 @@ namespace Axion.Conversion
 		protected Func<object, object> InvalidConversion => Conversions.AsNull;
 
 		/// <summary>
-		/// Determines if exceptions should be prevented when possible.
-		/// </summary>
-		protected readonly bool IsExceptionSafe;
-
-		/// <summary>
 		/// Determines whether the converter uses a <see cref="ConcurrentDictionary{TKey, TValue}"/> to store custom converters.
 		/// </summary>
 		protected bool IsThreadSafe => LookupCache is ConcurrentDictionary<Tuple<Type, Type>, Func<object, object>>;
 
-		private static readonly Type[] BasicTypes = new Type[] {
+		/// <summary>
+		/// Determines if Enum.TryParse() or Enum.Parse() will be used.
+		/// </summary>
+		protected bool TryParseEnum { get; }
+
+		/// <summary>
+		/// The types with a <see cref="TypeCode"/>.
+		/// </summary>
+		private static readonly Type[] TypeCodeTypes = new Type[] {
 			typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
 			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(DateTime), typeof(string),
 		};
@@ -156,44 +210,44 @@ namespace Axion.Conversion
 		/// <summary>
 		/// The types that have stored conversions. This is not every possible conversion.
 		/// </summary>
-		public IEnumerable<Type> OutputTypes => BasicTypes.Concat(LookupCache.Keys.Select(k => k.Item2)).Distinct();
-		
+		public IEnumerable<Type> OutputTypes => TypeCodeTypes.Concat(LookupCache.Keys.Select(k => k.Item2)).Distinct();
+
 		/// <summary>
-		/// Constructs a <see cref="TypeConvert"/> that can convert objects between different types.
+		/// Construts a <see cref="TypeConvert"/>.
 		/// </summary>
-		/// <param name="exceptionSafe">Determines if exceptions should be prevented when possible. This determines if
-		/// numeric conversions should be checked for overflow and if string conversions should use the TryParse or
-		/// Parse methods.</param>
-		/// <param name="threadSafe">Determines if custom conversions should be stored in a thread-safe dictionary.</param>
-		public TypeConvert(bool exceptionSafe = false, bool threadSafe = false)
+		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
+		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
+		/// <param name="copyFrom">The <see cref="TypeConvert"/> to clone.</param>
+		public TypeConvert(bool threadSafe = false, bool tryParseEnum = false, TypeConvert copyFrom = null)
 		{
-			IsExceptionSafe = exceptionSafe;
 			LookupCache = threadSafe
 				? new ConcurrentDictionary<Tuple<Type, Type>, Func<object, object>>()
 				: (IDictionary<Tuple<Type, Type>, Func<object, object>>)new Dictionary<Tuple<Type, Type>, Func<object, object>>();
 
-			// Typecode to X
-			outputConverters[(int)TypeCode.Empty] = InvalidConversion;
-			outputConverters[(int)TypeCode.Object] = null;
-			outputConverters[(int)TypeCode.DBNull] = ToDBNull;
-			outputConverters[(int)TypeCode.Boolean] = ToBoolean;
-			outputConverters[(int)TypeCode.Char] = ToChar;
-			outputConverters[(int)TypeCode.SByte] = ToSByte;
-			outputConverters[(int)TypeCode.Byte] = ToByte;
-			outputConverters[(int)TypeCode.Int16] = ToInt16;
-			outputConverters[(int)TypeCode.UInt16] = ToUInt16;
-			outputConverters[(int)TypeCode.Int32] = ToInt32;
-			outputConverters[(int)TypeCode.UInt32] = ToUInt32;
-			outputConverters[(int)TypeCode.Int64] = ToInt64;
-			outputConverters[(int)TypeCode.UInt64] = ToUInt64;
-			outputConverters[(int)TypeCode.Single] = ToSingle;
-			outputConverters[(int)TypeCode.Double] = ToDouble;
-			outputConverters[(int)TypeCode.Decimal] = ToDecimal;
-			outputConverters[(int)TypeCode.DateTime] = ToDateTime;
+			TryParseEnum = tryParseEnum;
+
+			//outputConverters[(int)TypeCode.Empty] = null;
+			//outputConverters[(int)TypeCode.Object] = null;
+			outputConverters[(int)TypeCode.DBNull] = CreateConverterFromType(typeof(DBNull));
+			outputConverters[(int)TypeCode.Boolean] = CreateConverterFromType(typeof(bool));
+			outputConverters[(int)TypeCode.Char] = CreateConverterFromType(typeof(char));
+			outputConverters[(int)TypeCode.SByte] = CreateConverterFromType(typeof(sbyte));
+			outputConverters[(int)TypeCode.Byte] = CreateConverterFromType(typeof(byte));
+			outputConverters[(int)TypeCode.Int16] = CreateConverterFromType(typeof(short));
+			outputConverters[(int)TypeCode.UInt16] = CreateConverterFromType(typeof(ushort));
+			outputConverters[(int)TypeCode.Int32] = CreateConverterFromType(typeof(int));
+			outputConverters[(int)TypeCode.UInt32] = CreateConverterFromType(typeof(uint));
+			outputConverters[(int)TypeCode.Int64] = CreateConverterFromType(typeof(long));
+			outputConverters[(int)TypeCode.UInt64] = CreateConverterFromType(typeof(ulong));
+			outputConverters[(int)TypeCode.Single] = CreateConverterFromType(typeof(float));
+			outputConverters[(int)TypeCode.Double] = CreateConverterFromType(typeof(double));
+			outputConverters[(int)TypeCode.Decimal] = CreateConverterFromType(typeof(decimal));
+			outputConverters[(int)TypeCode.DateTime] = CreateConverterFromType(typeof(DateTime));
+			outputConverters[17] = null;
 			outputConverters[(int)TypeCode.String] = ToString;
 
-			converterArray[(int)TypeCode.Empty] = invalidConverters; // Empty = 0
-			converterArray[(int)TypeCode.Object] = invalidConverters; // Object = 1
+			//converterArray[(int)TypeCode.Empty] = null; // Empty = 0
+			//converterArray[(int)TypeCode.Object] = null; // Object = 1
 			converterArray[(int)TypeCode.DBNull] = dbNullConverters; // DBNull = 2
 			converterArray[(int)TypeCode.Boolean] = boolConverters; // Boolean = 3
 			converterArray[(int)TypeCode.Char] = charConverters; // Char = 4
@@ -212,312 +266,171 @@ namespace Axion.Conversion
 			converterArray[17] = invalidConverters;
 			converterArray[(int)TypeCode.String] = stringConverters; // String = 18
 
-			Func<object, object>[][] numericConversions = exceptionSafe ? Conversions.UncheckedConversions : Conversions.CheckedConversions;
-			for (int i = 3; i <= 15; i++) {
-				var arr = converterArray[i];
-				var numericArr = numericConversions[i];
-				// bool to decimal
-				for (int j = 3; j <= 15; j++) {
-					arr[j] = numericArr[j] ?? InvalidConversion;
+			if (copyFrom != null) {
+				foreach (KeyValuePair<Tuple<Type, Type>, Func<object, object>> kv in copyFrom.LookupCache) {
+					LookupCache.Add(kv.Key, kv.Value);
+				}
+				for (int i = 2; i < 19; i++) {
+					Func<object, object>[] arr = converterArray[i];
+					Func<object, object>[] blArr = copyFrom.converterArray[i];
+					for (int j = 0; j < 19; j++) {
+						arr[j] = blArr[j];
+					}
 				}
 			}
-			for (int i = 0; i < 19; i++) {
-				stringConverters[i] = Conversions.ObjectToString;
-				dateTimeConverters[i] = InvalidConversion;
-				dbNullConverters[i] = InvalidConversion;
-			}
-			Func<object, object>[] parseConversions = exceptionSafe ? Conversions.TryParseConversions : Conversions.ParseConversions;
-			for (int i = 3; i < 17; i++) {
-				Func<object, object>[] arr = converterArray[i];
-				arr[(int)TypeCode.Empty] = InvalidConversion;
-				arr[(int)TypeCode.Object] = InvalidConversion;
-				arr[(int)TypeCode.DBNull] = InvalidConversion;
-				arr[(int)TypeCode.DateTime] = InvalidConversion;
-				arr[17] = InvalidConversion;
-				arr[(int)TypeCode.String] = parseConversions[i] ?? InvalidConversion;
-				arr[i] = Conversions.None;
-			}
-			dbNullConverters[(int)TypeCode.String] = Conversions.ObjectToString;
-			converterArray[(int)TypeCode.Boolean][(int)TypeCode.String] = IsExceptionSafe ? Conversions.TryParseBooleanEx : Conversions.ParseBooleanEx;
-			if (exceptionSafe) {
-				LookupCache[Tuple.Create(typeof(string), typeof(BigInteger))] = Conversions.tryParseBigInteger;
-				LookupCache[Tuple.Create(typeof(string), typeof(DateTimeOffset))] = Conversions.tryParseDateTimeOffset;
-				LookupCache[Tuple.Create(typeof(string), typeof(Guid))] = Conversions.TryParseGuid;
-				LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.tryParseTimeSpan;
-			}
 			else {
-				LookupCache[Tuple.Create(typeof(string), typeof(BigInteger))] = Conversions.parseBigInteger;
-				LookupCache[Tuple.Create(typeof(string), typeof(DateTimeOffset))] = Conversions.parseDateTimeOffset;
-				LookupCache[Tuple.Create(typeof(string), typeof(Guid))] = Conversions.ParseGuid;
-				LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.parseTimeSpan;
+				for (int i = 2; i < 19; i++) {
+					Func<object, object>[] arr = converterArray[i];
+					for (int j = 0; j < 19; j++) {
+						arr[j] = Conversions.AsNull;
+					}
+					arr[i] = Conversions.None;
+				}
+				converterArray[17][17] = Conversions.AsNull;
 			}
 		}
 
 		/// <summary>
-		/// Enables non-standard numeric <see cref="bool"/> conversions. These are not enabled by default.
+		/// Creates a converter from a given type. This is used to populate <see cref="outputConverters"/>. <see cref="TypeCode.Object"/> is not supported.
 		/// </summary>
-		protected void SetBooleanConversions()
+		/// <param name="output">The type to create a converter for.</param>
+		protected Func<object, object> CreateConverterFromType(Type output)
 		{
-			charConverters[(int)TypeCode.Boolean] = Conversions.BooleanToChar;
-			boolConverters[(int)TypeCode.Char] = Conversions.CharToBoolean;
-			// X to Boolean
-			boolConverters[(int)TypeCode.SByte] = Conversions.SByteToBoolean;
-			boolConverters[(int)TypeCode.Byte] = Conversions.ByteToBoolean;
-			boolConverters[(int)TypeCode.Int16] = Conversions.Int16ToBoolean;
-			boolConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToBoolean;
-			boolConverters[(int)TypeCode.Int32] = Conversions.Int32ToBoolean;
-			boolConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToBoolean;
-			boolConverters[(int)TypeCode.Int64] = Conversions.Int64ToBoolean;
-			boolConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToBoolean;
-			boolConverters[(int)TypeCode.Single] = Conversions.SingleToBoolean;
-			boolConverters[(int)TypeCode.Double] = Conversions.DoubleToBoolean;
-			boolConverters[(int)TypeCode.Decimal] = Conversions.DecimalToBoolean;
-			// Boolean to X
-			sbyteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSByte;
-			byteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToByte;
-			int16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt16;
-			uint16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt16;
-			int32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt32;
-			uint32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt32;
-			int64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt64;
-			uint64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt64;
-			singleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSingle;
-			doubleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDouble;
-			decimalConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDecimal;
+			TypeCode outputTypeCode = Type.GetTypeCode(output);
+			if (outputTypeCode <= TypeCode.Object)
+				throw new NotSupportedException("CreateConverterFromType does not support TypeCode: " + outputTypeCode.ToString());
+			return (object value) => {
+				Type input;
+				if (value == null)
+					input = null;
+				else {
+					input = value.GetType();
+					TypeCode inputTypeCode = Type.GetTypeCode(input);
+					Func<object, object> converter;
+					if (inputTypeCode == TypeCode.Object)
+						converter = Lookup(input, output);
+					else if (input.IsEnum)
+						converter = LookupEnum(input, inputTypeCode, input, inputTypeCode);
+					else
+						converter = this[inputTypeCode, outputTypeCode];
+					object result = converter(value);
+					if (result != null)
+						return result;
+				}
+				return OnFail(value, input, output);
+			};
 		}
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="DBNull"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		protected virtual object ToDBNull(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(DBNull)) : dbNullConverters[(int)typeCode];
-			return converter(value);
-		}
+		protected object ToDBNull(object value) => outputConverters[(int)TypeCode.DBNull](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="bool"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToBoolean(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(bool)) : boolConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToBoolean(object value) => outputConverters[(int)TypeCode.Boolean](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="char"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToChar(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(char)) : charConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToChar(object value) => outputConverters[(int)TypeCode.Char](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to an <see cref="sbyte"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToSByte(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(sbyte)) : sbyteConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToSByte(object value) => outputConverters[(int)TypeCode.SByte](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="byte"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToByte(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(byte)) : byteConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToByte(object value) => outputConverters[(int)TypeCode.Byte](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="short"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToInt16(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(short)) : int16Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToInt16(object value) => outputConverters[(int)TypeCode.Int16](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="ushort"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToUInt16(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(ushort)) : uint16Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToUInt16(object value) => outputConverters[(int)TypeCode.UInt16](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to an <see cref="int"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToInt32(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(int)) : int32Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToInt32(object value) => outputConverters[(int)TypeCode.Int32](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="uint"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToUInt32(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(uint)) : uint32Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToUInt32(object value) => outputConverters[(int)TypeCode.UInt32](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="long"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToInt64(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(long)) : int64Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToInt64(object value) => outputConverters[(int)TypeCode.Int64](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="ulong"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToUInt64(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(ulong)) : uint64Converters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToUInt64(object value) => outputConverters[(int)TypeCode.UInt64](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="float"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToSingle(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(float)) : singleConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToSingle(object value) => outputConverters[(int)TypeCode.Single](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="double"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToDouble(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(double)) : doubleConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToDouble(object value) => outputConverters[(int)TypeCode.Double](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="decimal"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToDecimal(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(decimal)) : decimalConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToDecimal(object value) => outputConverters[(int)TypeCode.Decimal](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="DateTime"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public object ToDateTime(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(DateTime)) : dateTimeConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToDateTime(object value) => outputConverters[(int)TypeCode.DateTime](value);
 
 		/// <summary>
 		/// Converts any <see cref="object"/> to a <see cref="string"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
-		public virtual object ToString(object value)
-		{
-			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode typeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = typeCode == TypeCode.Object ? Lookup(input, typeof(string)) : stringConverters[(int)typeCode];
-			return converter(value);
-		}
+		public object ToString(object value) => outputConverters[(int)TypeCode.String](value);
 
 		private object ToEnum(object value, Type output, TypeCode outputTypeCode)
 		{
+			Type input;
 			if (value == null)
-				return null;
-			Type input = value.GetType();
-			TypeCode inputTypeCode = Type.GetTypeCode(input);
-			Func<object, object> converter = LookupEnum(input, inputTypeCode, output, outputTypeCode);
-			return converter(value);
+				input = null;
+			else {
+				input = value.GetType();
+				TypeCode inputTypeCode = Type.GetTypeCode(input);
+				Func<object, object> converter = LookupEnum(input, inputTypeCode, output, outputTypeCode);
+				object result = converter(value);
+				if (result != null)
+					return result;
+			}
+			return OnFail(value, input, output);
 		}
 
 		/// <summary>
@@ -534,7 +447,7 @@ namespace Axion.Conversion
 				if (output == typeof(string))
 					return Conversions.ObjectToString;
 				if (input == typeof(string)) {
-					converter = IsExceptionSafe ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
+					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
 					LookupCache[inout] = converter;
 				}
 				else
@@ -583,11 +496,17 @@ namespace Axion.Conversion
 		/// </summary>
 		private object ConvertCustom(object value, Type output)
 		{
+			Type input;
 			if (value == null)
-				return null;
-			Type input = value.GetType();
-			Func<object, object> converter = Lookup(input, output);
-			return converter(value);
+				input = null;
+			else {
+				input = value.GetType();
+				Func<object, object> converter = input.IsEnum ? LookupEnum(input, Type.GetTypeCode(input), output, TypeCode.Object) : Lookup(input, output);
+				object result = converter(value);
+				if (result != null)
+					return result;
+			}
+			return OnFail(value, input, output);
 		}
 
 		/// <summary>
@@ -610,11 +529,31 @@ namespace Axion.Conversion
 		/// <returns>The result of the conversion or <see langword="null"/> on failure.</returns>
 		public object ChangeType(object value, Type output)
 		{
+			Type input;
 			if (value == null)
-				return value;
-			Type input = value.GetType();
-			Func<object, object> converter = this[input, output];
-			return converter(value);
+				input = null;
+			else {
+				input = value.GetType();
+				Func<object, object> converter = this[input, output];
+				object result = converter(value);
+				if (result != null)
+					return result;
+			}
+			return OnFail(value, input, output);
+		}
+
+		/// <summary>
+		/// Called when a conversion fails except by <see cref="TryChangeType(object, Type, out object)"/>.
+		/// This should throw an exception or return a value.
+		/// </summary>
+		/// <param name="value">The <see cref="object"/> to convert.</param>
+		/// <param name="input">The <see cref="Type"/> to convert from.</param>
+		/// <param name="output">The <see cref="Type"/> to convert to.</param>
+		protected virtual object OnFail(object value, Type input, Type output)
+		{
+			if (value == null)
+				return null;
+			throw new InvalidOperationException("Cannot convert from " + input.Name + " to " + output.Name);
 		}
 
 		/// <summary>
@@ -628,7 +567,9 @@ namespace Axion.Conversion
 		{
 			if (value != null) {
 				try {
-					result = ChangeType(value, output);
+					Type input = value.GetType();
+					Func<object, object> converter = this[input, output];
+					result = converter(value);
 					return result != null;
 				}
 				catch {
@@ -696,7 +637,8 @@ namespace Axion.Conversion
 				if (typeCode > TypeCode.Object) {
 					if (output.IsEnum)
 						return (value) => ToEnum(value, output, typeCode);
-					return outputConverters[(int)typeCode];
+					else
+						return outputConverters[(int)typeCode];
 				}
 				return (value) => ConvertCustom(value, output);
 			}

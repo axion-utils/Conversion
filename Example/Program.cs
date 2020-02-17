@@ -7,6 +7,10 @@ public static class Program
 {
 public static void Main()
 {
+	object a = System.Convert.ChangeType(1.5, typeof(int));
+	object b = TypeConvert.ChangeType(1.5, typeof(int));
+			todo
+
 	// equivalent to TypeConvert.Default.ChangeType
 	object value = TypeConvert.ChangeType("1.5", typeof(double));
 	Console.WriteLine(value + " " + value.GetType().Name); // 1.5 Double

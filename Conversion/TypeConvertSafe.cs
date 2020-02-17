@@ -20,26 +20,36 @@
 #endregion
 
 using System;
+using System.Numerics;
 
 namespace Axion.Conversion
 {
 	/// <summary>
 	/// TypeConvert which has been optimized for standard lookups.
 	/// </summary>
-	internal class TypeConvertEx : TypeConvert
+	internal class TypeConvertSafe : TypeConvertDefault
 	{
-		internal protected TypeConvertEx(bool exceptionSafe = false, bool threadSafe = false) : base(exceptionSafe, threadSafe)
+		public TypeConvertSafe(bool threadSafe = true, bool tryParseEnum = true) : base(threadSafe, tryParseEnum)
 		{
+			Func<object, object>[][] numericConversions = Conversions.UncheckedConversions;
+			for (int i = 3; i <= 15; i++) {
+				Func<object, object>[] arr = converterArray[i];
+				Func<object, object>[] numericArr = numericConversions[i];
+				// bool to decimal
+				for (int j = 3; j <= 15; j++) {
+					arr[j] = numericArr[j] ?? InvalidConversion;
+				}
+			}
+			converterArray[(int)TypeCode.Boolean][(int)TypeCode.String] = Conversions.TryParseBooleanEx;
+			LookupCache[Tuple.Create(typeof(string), typeof(BigInteger))] = Conversions.tryParseBigInteger;
+			LookupCache[Tuple.Create(typeof(string), typeof(DateTimeOffset))] = Conversions.tryParseDateTimeOffset;
+			LookupCache[Tuple.Create(typeof(string), typeof(Guid))] = Conversions.TryParseGuid;
+			LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.tryParseTimeSpan;
 		}
 
-		public override object ToString(object value)
+		protected override object OnFail(object value, Type input, Type output)
 		{
-			return value?.ToString();
-		}
-
-		protected override object ToDBNull(object value)
-		{
-			return value == DBNull.Value ? DBNull.Value : null;
+			return value;
 		}
 
 		protected override Func<object, object> Lookup(Type input, Type output)
@@ -68,7 +78,7 @@ namespace Axion.Conversion
 			if (input == typeof(string)) {
 				Tuple<Type, Type> inout = Tuple.Create(input, output);
 				if (!LookupCache.TryGetValue(inout, out Func<object, object> converter)) {
-					converter = IsExceptionSafe ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
+					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
 					LookupCache[inout] = converter;
 				}
 				return converter;
