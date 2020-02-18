@@ -11,13 +11,13 @@ namespace Axion
 	public class UnitTests
 	{
 		public readonly Type[] ParseTypes = new Type[] {
-			typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
+			typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
 			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(string), typeof(DateTime),
 			 typeof(DateTimeOffset),  typeof(TimeSpan), typeof(Guid), typeof(BigInteger), typeof(DayOfWeek), typeof(DateTimeKind)
 		};
 		public readonly object[] ParseValues = new object[] {
-			true, char.MaxValue, sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
-			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue, decimal.MaxValue, "abc", DateTime.Now, 
+			sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
+			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue, decimal.MaxValue, "abc", DateTime.Now,
 			DateTimeOffset.UtcNow, new TimeSpan(5, 3, 8), Guid.NewGuid(), new BigInteger(ulong.MaxValue) + 1, DayOfWeek.Wednesday, DateTimeKind.Local
 		};
 		public readonly Type[] BasicTypes = new Type[] {
@@ -25,27 +25,27 @@ namespace Axion
 			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(DateTime), typeof(string),
 		};
 		public readonly Type[] NumericTypes = new Type[] {
-			typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
-			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal),
+			typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
+			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger)
 		};
 		public readonly object[] ZeroValues = new object[] {
-			(char)0, (sbyte)0, (byte)0, (short)0, (ushort)0, (int)0, (uint)0U,
+			(sbyte)0, (byte)0, (short)0, (ushort)0, (int)0, (uint)0U,
 			(long)0L, (ulong)0UL, (float)0.0f, (double)0.0, (decimal)0.0m, (BigInteger)0
 		};
 		public readonly object[] OneValues = new object[] {
-			(char)1, (sbyte)1, (byte)1, (short)1, (ushort)1, (int)1, (uint)1U,
+			(sbyte)1, (byte)1, (short)1, (ushort)1, (int)1, (uint)1U,
 			(long)1L, (ulong)1UL, (float)1.0f, (double)1.0, (decimal)1.0m, (BigInteger)1
 		};
 		public readonly object[] MinValues = new object[] {
-			char.MinValue, sbyte.MinValue, byte.MinValue, short.MinValue, ushort.MinValue, int.MinValue, uint.MinValue,
+			sbyte.MinValue, byte.MinValue, short.MinValue, ushort.MinValue, int.MinValue, uint.MinValue,
 			long.MinValue, ulong.MinValue, float.MinValue, double.MinValue *0.98, decimal.MinValue,(BigInteger)float.MinValue
 		};
 		public readonly object[] MaxValues = new object[] {
-			char.MaxValue, sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
+			sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
 			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue *0.98, decimal.MaxValue,(BigInteger)float.MaxValue
 		};
 		public readonly Type[] NonNumericTypes = new Type[] {
-			typeof(Guid), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan), typeof(bool)
+			typeof(Guid), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan)
 		};
 
 		public readonly List<object> BigIntegers = new List<object>() { (BigInteger)0, (BigInteger)1, new BigInteger(long.MinValue) - 1, new BigInteger(ulong.MaxValue) + 1 };
@@ -155,8 +155,10 @@ namespace Axion
 		{
 			foreach (Type input in NonNumericTypes) {
 				foreach (Type output in NumericTypes) {
-					Assert.IsFalse(TypeConvert.CanConvertTo(input, output));
-					Assert.IsFalse(TypeConvert.CanConvertTo(output, input));
+					bool invert = output == typeof(char) && input == typeof(bool);
+					invert = invert || (input == typeof(char) && output == typeof(bool));
+					Assert.AreEqual(TypeConvert.CanConvertTo(input, output), invert);
+					Assert.AreEqual(TypeConvert.CanConvertTo(output, input), invert);
 				}
 			}
 		}
@@ -173,18 +175,15 @@ namespace Axion
 					if (type == typeof(char) && zeroVal.GetType() == typeof(BigInteger))
 						continue;
 					object result = TypeConvert.ChangeType(zeroVal, type);
+					Type zeroValType = zeroVal.GetType();
+					Type resultType = result?.GetType();
 					Assert.IsNotNull(result);
-					Assert.AreEqual(type, result.GetType());
+					Assert.AreEqual(type, resultType);
 					object result2 = TypeConvert.ChangeType(oneVal, type);
 					Assert.IsNotNull(result2);
 					Assert.AreEqual(type, result2.GetType());
-					if (i == 0 || i == 1 || type == typeof(bool) || type == typeof(char)) {
-						continue;
-					}
-					else {
-						Assert.IsTrue(result.ToString() == "0" || result.ToString() == "0.0");
-						Assert.IsTrue(result2.ToString() == "1" || result2.ToString() == "1.0");
-					}
+					Assert.IsTrue(result.ToString() == "0" || result.ToString() == "0.0");
+					Assert.IsTrue(result2.ToString() == "1" || result2.ToString() == "1.0");
 				}
 			}
 		}
@@ -203,6 +202,71 @@ namespace Axion
 					TestAny(zeroVal, type);
 					TestAny(oneVal, type);
 				}
+			}
+		}
+
+		[TestMethod]
+		public void TestChar()
+		{
+			for (int i = 0; i < NumericTypes.Length - 4; i++) {
+				// do not use BigInteger, float, double, decimal
+				Type type = NumericTypes[i];
+				if (type == typeof(float) || type == typeof(decimal) || type == typeof(double))
+					continue;
+				object val = TypeConvert.ChangeType((char)5, type);
+				Assert.IsNotNull(val);
+				Type resultTy = val.GetType();
+				Assert.AreEqual(type, resultTy);
+				val = TypeConvert.ChangeType((char)0, type);
+				Assert.IsNotNull(val);
+				resultTy = val.GetType();
+				Assert.AreEqual(type, resultTy);
+			}
+			for (int i = 0; i < OneValues.Length - 4; i++) {
+				object oneVal = OneValues[i];
+				object val = TypeConvert.ChangeType(oneVal, typeof(char));
+				Assert.IsNotNull(val);
+				Type type = val.GetType();
+				Assert.AreEqual(type, typeof(char));
+			}
+			for (int i = 0; i < ZeroValues.Length - 4; i++) {
+				object zeroVal = ZeroValues[i];
+				object val = TypeConvert.ChangeType(zeroVal, typeof(char));
+				Assert.IsNotNull(val);
+				Type type = val.GetType();
+				Assert.AreEqual(type, typeof(char));
+			}
+		}
+
+
+		[TestMethod]
+		public void TestBoolean()
+		{
+			for(int i = 0; i < NumericTypes.Length - 1; i++) {
+				// do not use BigInteger
+				Type type = NumericTypes[i];
+				object val = TypeConvert.ChangeType(true, type);
+				Assert.IsNotNull(val);
+				Type resultTy = val.GetType();
+				Assert.AreEqual(type, resultTy);
+				val = TypeConvert.ChangeType(false, type);
+				Assert.IsNotNull(val);
+				resultTy = val.GetType();
+				Assert.AreEqual(type, resultTy);
+			}
+			for (int i = 0; i < OneValues.Length - 1; i++) {
+				object oneVal = OneValues[i];
+				object val = TypeConvert.ChangeType(oneVal, typeof(bool));
+				Assert.IsNotNull(val);
+				Type type = val.GetType();
+				Assert.AreEqual(type, typeof(bool));
+			}
+			for (int i = 0; i < ZeroValues.Length - 1; i++) {
+				object zeroVal = ZeroValues[i];
+				object val = TypeConvert.ChangeType(zeroVal, typeof(bool));
+				Assert.IsNotNull(val);
+				Type type = val.GetType();
+				Assert.AreEqual(type, typeof(bool));
 			}
 		}
 

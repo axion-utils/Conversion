@@ -170,11 +170,6 @@ namespace Axion.Conversion
 		}
 
 		#region Boolean
-		// From Boolean
-		/// <summary>
-		/// Converts <see langword="true"/> to '1' and <see langword="false"/> to '0'.
-		/// </summary>
-		public static readonly Func<object, object> BooleanToChar = (object value) => ((bool)value) ? '1' : '0';
 		/// <summary>
 		/// Converts <see langword="true"/> to 1 and <see langword="false"/> to 0.
 		/// /// </summary>
@@ -224,14 +219,6 @@ namespace Axion.Conversion
 		/// /// </summary>
 		public static readonly Func<object, object> BooleanToBigInteger = (object value) => ((bool)value) ? new BigInteger(1) : new BigInteger(0);
 
-		// To Boolean
-		/// <summary>
-		/// Converts '0' and '\0' to <see langword="false"/> and all other values to <see langword="true"/>.
-		/// </summary>
-		public static readonly Func<object, object> CharToBoolean = (object value) => {
-			char c = (char)value;
-			return c != '0' && c != '\0';
-		};
 		/// <summary>
 		/// Converts 0 to <see langword="false"/> and all other values to <see langword="true"/>
 		/// </summary>
@@ -279,10 +266,21 @@ namespace Axion.Conversion
 		#endregion Boolean
 
 		#region Char
-		//public static readonly Func<object, object> CharToChar = (object value) => (char)(char)value;
-		public static readonly Func<object, object> CharToSByte = (object value) => (sbyte)(char)value;
-		public static readonly Func<object, object> CharToByte = (object value) => (byte)(char)value;
-		public static readonly Func<object, object> CharToInt16 = (object value) => (short)(char)value;
+		// Checked (null)
+		public static readonly Func<object, object> CharToSByte = (object value) => {
+			char val = (char)value;
+			return val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> CharToByte = (object value) => {
+			char val = (char)value;
+			return val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> CharToInt16 = (object value) => {
+			char val = (char)value;
+			return val > short.MaxValue ? (object)null : (short)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> CharToUInt16 = (object value) => (ushort)(char)value;
 		public static readonly Func<object, object> CharToInt32 = (object value) => (int)(char)value;
 		public static readonly Func<object, object> CharToUInt32 = (object value) => (uint)(char)value;
@@ -293,6 +291,11 @@ namespace Axion.Conversion
 		public static readonly Func<object, object> CharToDecimal = (object value) => (decimal)(char)value;
 		public static readonly Func<object, object> CharToBigInteger = (object value) => (BigInteger)(char)value;
 
+		// Unchecked
+		public static readonly Func<object, object> CharToSByte_Unchecked = (object value) => unchecked((sbyte)(char)value);
+		public static readonly Func<object, object> CharToByte_Unchecked = (object value) => unchecked((byte)(char)value);
+		public static readonly Func<object, object> CharToInt16_Unchecked = (object value) => unchecked((short)(char)value);
+
 		// Checked
 		public static readonly Func<object, object> CharToSByte_Checked = (object value) => checked((sbyte)(char)value);
 		public static readonly Func<object, object> CharToByte_Checked = (object value) => checked((byte)(char)value);
@@ -300,20 +303,43 @@ namespace Axion.Conversion
 		#endregion Char
 
 		#region SByte
-		//public static readonly Func<object, object> SByteToBool = (object value) => (bool)(sbyte)value;
-		public static readonly Func<object, object> SByteToChar = (object value) => (char)(sbyte)value;
-		//public static readonly Func<object, object> SByteToSByte = (object value) => (sbyte)(sbyte)value;
-		public static readonly Func<object, object> SByteToByte = (object value) => (byte)(sbyte)value;
+		// Checked (null)
+		public static readonly Func<object, object> SByteToChar = (object value) => {
+			sbyte val = (sbyte)value;
+			return val < char.MinValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> SByteToByte = (object value) => {
+			sbyte val = (sbyte)value;
+			return val < 0 ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> SByteToUInt16 = (object value) => {
+			sbyte val = (sbyte)value;
+			return val < 0 ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> SByteToUInt32 = (object value) => {
+			sbyte val = (sbyte)value;
+			return val < 0 ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> SByteToUInt64 = (object value) => {
+			sbyte val = (sbyte)value;
+			return val < 0 ? (object)null : (ulong)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> SByteToInt16 = (object value) => (short)(sbyte)value;
-		public static readonly Func<object, object> SByteToUInt16 = (object value) => (ushort)(sbyte)value;
 		public static readonly Func<object, object> SByteToInt32 = (object value) => (int)(sbyte)value;
-		public static readonly Func<object, object> SByteToUInt32 = (object value) => (uint)(sbyte)value;
 		public static readonly Func<object, object> SByteToInt64 = (object value) => (long)(sbyte)value;
-		public static readonly Func<object, object> SByteToUInt64 = (object value) => (ulong)(sbyte)value;
 		public static readonly Func<object, object> SByteToSingle = (object value) => (float)(sbyte)value;
 		public static readonly Func<object, object> SByteToDouble = (object value) => (double)(sbyte)value;
 		public static readonly Func<object, object> SByteToDecimal = (object value) => (decimal)(sbyte)value;
 		public static readonly Func<object, object> SByteToBigInteger = (object value) => (BigInteger)(sbyte)value;
+
+		// Unchecked
+		public static readonly Func<object, object> SByteToChar_Unchecked = (object value) => unchecked((char)(sbyte)value);
+		public static readonly Func<object, object> SByteToByte_Unchecked = (object value) => unchecked((byte)(sbyte)value);
+		public static readonly Func<object, object> SByteToUInt16_Unchecked = (object value) => unchecked((ushort)(sbyte)value);
+		public static readonly Func<object, object> SByteToUInt32_Unchecked = (object value) => unchecked((uint)(sbyte)value);
+		public static readonly Func<object, object> SByteToUInt64_Unchecked = (object value) => unchecked((ulong)(sbyte)value);
 
 		// Checked
 		public static readonly Func<object, object> SByteToChar_Checked = (object value) => checked((char)(sbyte)value);
@@ -324,9 +350,14 @@ namespace Axion.Conversion
 		#endregion SByte
 
 		#region Byte
+		// Checked (null)
+		public static readonly Func<object, object> ByteToSByte = (object value) => {
+			byte val = (byte)value;
+			return val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> ByteToChar = (object value) => (char)(byte)value;
-		public static readonly Func<object, object> ByteToSByte = (object value) => (sbyte)(byte)value;
-		//public static readonly Func<object, object> ByteToByte = (object value) => (byte)(byte)value;
 		public static readonly Func<object, object> ByteToInt16 = (object value) => (short)(byte)value;
 		public static readonly Func<object, object> ByteToUInt16 = (object value) => (ushort)(byte)value;
 		public static readonly Func<object, object> ByteToInt32 = (object value) => (int)(byte)value;
@@ -338,24 +369,55 @@ namespace Axion.Conversion
 		public static readonly Func<object, object> ByteToDecimal = (object value) => (decimal)(byte)value;
 		public static readonly Func<object, object> ByteToBigInteger = (object value) => (BigInteger)(byte)value;
 
+		// Unchecked
+		public static readonly Func<object, object> ByteToSByte_Unchecked = (object value) => unchecked((sbyte)(byte)value);
+
 		// Checked
 		public static readonly Func<object, object> ByteToSByte_Checked = (object value) => checked((sbyte)(byte)value);
 		#endregion Byte
 
 		#region Int16
-		public static readonly Func<object, object> Int16ToChar = (object value) => (char)(short)value;
-		public static readonly Func<object, object> Int16ToSByte = (object value) => (sbyte)(short)value;
-		public static readonly Func<object, object> Int16ToByte = (object value) => (byte)(short)value;
-		//public static readonly Func<object, object> Int16ToInt16 = (object value) => (short)(short)value;
-		public static readonly Func<object, object> Int16ToUInt16 = (object value) => (ushort)(short)value;
+		// Checked (null)
+		public static readonly Func<object, object> Int16ToChar = (object value) => {
+			short val = (short)value;
+			return val < char.MinValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> Int16ToSByte = (object value) => {
+			short val = (short)value;
+			return val < sbyte.MinValue || val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> Int16ToByte = (object value) => {
+			short val = (short)value;
+			return val < 0 || val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> Int16ToUInt16 = (object value) => {
+			short val = (short)value;
+			return val < 0 ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> Int16ToUInt32 = (object value) => {
+			short val = (short)value;
+			return val < 0 ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> Int16ToUInt64 = (object value) => {
+			short val = (short)value;
+			return val < 0 ? (object)null : (ulong)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> Int16ToInt32 = (object value) => (int)(short)value;
-		public static readonly Func<object, object> Int16ToUInt32 = (object value) => (uint)(short)value;
 		public static readonly Func<object, object> Int16ToInt64 = (object value) => (long)(short)value;
-		public static readonly Func<object, object> Int16ToUInt64 = (object value) => (ulong)(short)value;
 		public static readonly Func<object, object> Int16ToSingle = (object value) => (float)(short)value;
 		public static readonly Func<object, object> Int16ToDouble = (object value) => (double)(short)value;
 		public static readonly Func<object, object> Int16ToDecimal = (object value) => (decimal)(short)value;
 		public static readonly Func<object, object> Int16ToBigInteger = (object value) => (BigInteger)(short)value;
+
+		// Unchecked
+		public static readonly Func<object, object> Int16ToChar_Unchecked = (object value) => unchecked((char)(short)value);
+		public static readonly Func<object, object> Int16ToSByte_Unchecked = (object value) => unchecked((sbyte)(short)value);
+		public static readonly Func<object, object> Int16ToByte_Unchecked = (object value) => unchecked((byte)(short)value);
+		public static readonly Func<object, object> Int16ToUInt16_Unchecked = (object value) => unchecked((ushort)(short)value);
+		public static readonly Func<object, object> Int16ToUInt32_Unchecked = (object value) => unchecked((uint)(short)value);
+		public static readonly Func<object, object> Int16ToUInt64_Unchecked = (object value) => unchecked((ulong)(short)value);
 
 		// Checked
 		public static readonly Func<object, object> Int16ToChar_Checked = (object value) => checked((char)(short)value);
@@ -367,11 +429,22 @@ namespace Axion.Conversion
 		#endregion Int16
 
 		#region UInt16
+		// Checked (null)
+		public static readonly Func<object, object> UInt16ToSByte = (object value) => {
+			ushort val = (ushort)value;
+			return val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> UInt16ToByte = (object value) => {
+			ushort val = (ushort)value;
+			return val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> UInt16ToInt16 = (object value) => {
+			ushort val = (ushort)value;
+			return val > short.MaxValue ? (object)null : (short)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> UInt16ToChar = (object value) => (char)(ushort)value;
-		public static readonly Func<object, object> UInt16ToSByte = (object value) => (sbyte)(ushort)value;
-		public static readonly Func<object, object> UInt16ToByte = (object value) => (byte)(ushort)value;
-		public static readonly Func<object, object> UInt16ToInt16 = (object value) => (short)(ushort)value;
-		//public static readonly Func<object, object> UInt16ToUInt16 = (object value) => (ushort)(ushort)value;
 		public static readonly Func<object, object> UInt16ToInt32 = (object value) => (int)(ushort)value;
 		public static readonly Func<object, object> UInt16ToUInt32 = (object value) => (uint)(ushort)value;
 		public static readonly Func<object, object> UInt16ToInt64 = (object value) => (long)(ushort)value;
@@ -381,6 +454,11 @@ namespace Axion.Conversion
 		public static readonly Func<object, object> UInt16ToDecimal = (object value) => (decimal)(ushort)value;
 		public static readonly Func<object, object> UInt16ToBigInteger = (object value) => (BigInteger)(ushort)value;
 
+		// Unchecked
+		public static readonly Func<object, object> UInt16ToSByte_Unchecked = (object value) => unchecked((sbyte)(ushort)value);
+		public static readonly Func<object, object> UInt16ToByte_Unchecked = (object value) => unchecked((byte)(ushort)value);
+		public static readonly Func<object, object> UInt16ToInt16_Unchecked = (object value) => unchecked((short)(ushort)value);
+
 		// Checked
 		public static readonly Func<object, object> UInt16ToSByte_Checked = (object value) => checked((sbyte)(ushort)value);
 		public static readonly Func<object, object> UInt16ToByte_Checked = (object value) => checked((byte)(ushort)value);
@@ -388,19 +466,51 @@ namespace Axion.Conversion
 		#endregion UInt16
 
 		#region Int32
-		public static readonly Func<object, object> Int32ToChar = (object value) => (char)(int)value;
-		public static readonly Func<object, object> Int32ToSByte = (object value) => (sbyte)(int)value;
-		public static readonly Func<object, object> Int32ToByte = (object value) => (byte)(int)value;
-		public static readonly Func<object, object> Int32ToInt16 = (object value) => (short)(int)value;
-		public static readonly Func<object, object> Int32ToUInt16 = (object value) => (ushort)(int)value;
-		//public static readonly Func<object, object> Int32ToInt32 = (object value) => (int)(int)value;
-		public static readonly Func<object, object> Int32ToUInt32 = (object value) => (uint)(int)value;
+		// Checked (null)
+		public static readonly Func<object, object> Int32ToChar = (object value) => {
+			int val = (int)value;
+			return val < char.MinValue || val > char.MaxValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> Int32ToSByte = (object value) => {
+			int val = (int)value;
+			return val < sbyte.MinValue || val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> Int32ToByte = (object value) => {
+			int val = (int)value;
+			return val < 0 || val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> Int32ToInt16 = (object value) => {
+			int val = (int)value;
+			return val < short.MinValue || val > short.MaxValue ? (object)null : (short)val;
+		};
+		public static readonly Func<object, object> Int32ToUInt16 = (object value) => {
+			int val = (int)value;
+			return val < 0 || val > ushort.MaxValue ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> Int32ToUInt32 = (object value) => {
+			int val = (int)value;
+			return val < 0 ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> Int32ToUInt64 = (object value) => {
+			int val = (int)value;
+			return val < 0 ? (object)null : (ulong)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> Int32ToInt64 = (object value) => (long)(int)value;
-		public static readonly Func<object, object> Int32ToUInt64 = (object value) => (ulong)(int)value;
 		public static readonly Func<object, object> Int32ToSingle = (object value) => (float)(int)value;
 		public static readonly Func<object, object> Int32ToDouble = (object value) => (double)(int)value;
 		public static readonly Func<object, object> Int32ToDecimal = (object value) => (decimal)(int)value;
 		public static readonly Func<object, object> Int32ToBigInteger = (object value) => (BigInteger)(int)value;
+
+		// Unchecked
+		public static readonly Func<object, object> Int32ToChar_Unchecked = (object value) => unchecked((char)(int)value);
+		public static readonly Func<object, object> Int32ToSByte_Unchecked = (object value) => unchecked((sbyte)(int)value);
+		public static readonly Func<object, object> Int32ToByte_Unchecked = (object value) => unchecked((byte)(int)value);
+		public static readonly Func<object, object> Int32ToInt16_Unchecked = (object value) => unchecked((short)(int)value);
+		public static readonly Func<object, object> Int32ToUInt16_Unchecked = (object value) => unchecked((ushort)(int)value);
+		public static readonly Func<object, object> Int32ToUInt32_Unchecked = (object value) => unchecked((uint)(int)value);
+		public static readonly Func<object, object> Int32ToUInt64_Unchecked = (object value) => unchecked((ulong)(int)value);
 
 		// Checked
 		public static readonly Func<object, object> Int32ToChar_Checked = (object value) => checked((char)(int)value);
@@ -413,19 +523,47 @@ namespace Axion.Conversion
 		#endregion Int32
 
 		#region UInt32
-		public static readonly Func<object, object> UInt32ToChar = (object value) => (char)(uint)value;
-		public static readonly Func<object, object> UInt32ToSByte = (object value) => (sbyte)(uint)value;
-		public static readonly Func<object, object> UInt32ToByte = (object value) => (byte)(uint)value;
-		public static readonly Func<object, object> UInt32ToInt16 = (object value) => (short)(uint)value;
-		public static readonly Func<object, object> UInt32ToUInt16 = (object value) => (ushort)(uint)value;
-		public static readonly Func<object, object> UInt32ToInt32 = (object value) => (int)(uint)value;
-		//public static readonly Func<object, object> UInt32ToUInt32 = (object value) => (uint)(uint)value;
+		// Checked (null)
+		public static readonly Func<object, object> UInt32ToChar = (object value) => {
+			uint val = (uint)value;
+			return val > char.MaxValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> UInt32ToSByte = (object value) => {
+			uint val = (uint)value;
+			return val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> UInt32ToByte = (object value) => {
+			uint val = (uint)value;
+			return val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> UInt32ToInt16 = (object value) => {
+			uint val = (uint)value;
+			return val > short.MaxValue ? (object)null : (short)val;
+		};
+		public static readonly Func<object, object> UInt32ToUInt16 = (object value) => {
+			uint val = (uint)value;
+			return val > ushort.MaxValue ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> UInt32ToInt32 = (object value) => {
+			uint val = (uint)value;
+			return val > int.MaxValue ? (object)null : (int)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> UInt32ToInt64 = (object value) => (long)(uint)value;
 		public static readonly Func<object, object> UInt32ToUInt64 = (object value) => (ulong)(uint)value;
 		public static readonly Func<object, object> UInt32ToSingle = (object value) => (float)(uint)value;
 		public static readonly Func<object, object> UInt32ToDouble = (object value) => (double)(uint)value;
 		public static readonly Func<object, object> UInt32ToDecimal = (object value) => (decimal)(uint)value;
 		public static readonly Func<object, object> UInt32ToBigInteger = (object value) => (BigInteger)(uint)value;
+
+		// Unchecked
+		public static readonly Func<object, object> UInt32ToChar_Unchecked = (object value) => unchecked((char)(uint)value);
+		public static readonly Func<object, object> UInt32ToSByte_Unchecked = (object value) => unchecked((sbyte)(uint)value);
+		public static readonly Func<object, object> UInt32ToByte_Unchecked = (object value) => unchecked((byte)(uint)value);
+		public static readonly Func<object, object> UInt32ToInt16_Unchecked = (object value) => unchecked((short)(uint)value);
+		public static readonly Func<object, object> UInt32ToUInt16_Unchecked = (object value) => unchecked((ushort)(uint)value);
+		public static readonly Func<object, object> UInt32ToInt32_Unchecked = (object value) => unchecked((int)(uint)value);
 
 		// Checked
 		public static readonly Func<object, object> UInt32ToChar_Checked = (object value) => checked((char)(uint)value);
@@ -437,19 +575,55 @@ namespace Axion.Conversion
 		#endregion UInt32
 
 		#region Int64
-		public static readonly Func<object, object> Int64ToChar = (object value) => (char)(long)value;
-		public static readonly Func<object, object> Int64ToSByte = (object value) => (sbyte)(long)value;
-		public static readonly Func<object, object> Int64ToByte = (object value) => (byte)(long)value;
-		public static readonly Func<object, object> Int64ToInt16 = (object value) => (short)(long)value;
-		public static readonly Func<object, object> Int64ToUInt16 = (object value) => (ushort)(long)value;
-		public static readonly Func<object, object> Int64ToInt32 = (object value) => (int)(long)value;
-		public static readonly Func<object, object> Int64ToUInt32 = (object value) => (uint)(long)value;
-		//public static readonly Func<object, object> Int64ToInt64 = (object value) => (long)(long)value;
-		public static readonly Func<object, object> Int64ToUInt64 = (object value) => (ulong)(long)value;
+		// Checked (null)
+		public static readonly Func<object, object> Int64ToChar = (object value) => {
+			long val = (long)value;
+			return val < char.MinValue || val > char.MaxValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> Int64ToSByte = (object value) => {
+			long val = (long)value;
+			return val < sbyte.MinValue || val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> Int64ToByte = (object value) => {
+			long val = (long)value;
+			return val < 0 || val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> Int64ToInt16 = (object value) => {
+			long val = (long)value;
+			return val < short.MinValue || val > short.MaxValue ? (object)null : (short)val;
+		};
+		public static readonly Func<object, object> Int64ToUInt16 = (object value) => {
+			long val = (long)value;
+			return val < 0 || val > ushort.MaxValue ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> Int64ToInt32 = (object value) => {
+			long val = (long)value;
+			return val < int.MinValue || val > int.MaxValue ? (object)null : (int)val;
+		};
+		public static readonly Func<object, object> Int64ToUInt32 = (object value) => {
+			long val = (long)value;
+			return val < 0 || val > uint.MaxValue ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> Int64ToUInt64 = (object value) => {
+			long val = (long)value;
+			return val < 0 ? (object)null : (ulong)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> Int64ToSingle = (object value) => (float)(long)value;
 		public static readonly Func<object, object> Int64ToDouble = (object value) => (double)(long)value;
 		public static readonly Func<object, object> Int64ToDecimal = (object value) => (decimal)(long)value;
 		public static readonly Func<object, object> Int64ToBigInteger = (object value) => (BigInteger)(long)value;
+
+		// Unchecked
+		public static readonly Func<object, object> Int64ToChar_Unchecked = (object value) => unchecked((char)(long)value);
+		public static readonly Func<object, object> Int64ToSByte_Unchecked = (object value) => unchecked((sbyte)(long)value);
+		public static readonly Func<object, object> Int64ToByte_Unchecked = (object value) => unchecked((byte)(long)value);
+		public static readonly Func<object, object> Int64ToInt16_Unchecked = (object value) => unchecked((short)(long)value);
+		public static readonly Func<object, object> Int64ToUInt16_Unchecked = (object value) => unchecked((ushort)(long)value);
+		public static readonly Func<object, object> Int64ToInt32_Unchecked = (object value) => unchecked((int)(long)value);
+		public static readonly Func<object, object> Int64ToUInt32_Unchecked = (object value) => unchecked((uint)(long)value);
+		public static readonly Func<object, object> Int64ToUInt64_Unchecked = (object value) => unchecked((ulong)(long)value);
 
 		// Checked
 		public static readonly Func<object, object> Int64ToChar_Checked = (object value) => checked((char)(long)value);
@@ -463,19 +637,55 @@ namespace Axion.Conversion
 		#endregion Int64
 
 		#region UInt64
-		public static readonly Func<object, object> UInt64ToChar = (object value) => (char)(ulong)value;
-		public static readonly Func<object, object> UInt64ToSByte = (object value) => (sbyte)(ulong)value;
-		public static readonly Func<object, object> UInt64ToByte = (object value) => (byte)(ulong)value;
-		public static readonly Func<object, object> UInt64ToInt16 = (object value) => (short)(ulong)value;
-		public static readonly Func<object, object> UInt64ToUInt16 = (object value) => (ushort)(ulong)value;
-		public static readonly Func<object, object> UInt64ToInt32 = (object value) => (int)(ulong)value;
-		public static readonly Func<object, object> UInt64ToUInt32 = (object value) => (uint)(ulong)value;
-		public static readonly Func<object, object> UInt64ToInt64 = (object value) => (long)(ulong)value;
-		//public static readonly Func<object, object> UInt64ToUInt64 = (object value) => (ulong)(ulong)value;
+		// Checked (null)
+		public static readonly Func<object, object> UInt64ToChar = (object value) => {
+			ulong val = (ulong)value;
+			return val > char.MaxValue ? (object)null : (char)val;
+		};
+		public static readonly Func<object, object> UInt64ToSByte = (object value) => {
+			ulong val = (ulong)value;
+			return val > (ulong)sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> UInt64ToByte = (object value) => {
+			ulong val = (ulong)value;
+			return val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> UInt64ToInt16 = (object value) => {
+			ulong val = (ulong)value;
+			return val > (ulong)short.MaxValue ? (object)null : (short)val;
+		};
+		public static readonly Func<object, object> UInt64ToUInt16 = (object value) => {
+			ulong val = (ulong)value;
+			return val > ushort.MaxValue ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> UInt64ToInt32 = (object value) => {
+			ulong val = (ulong)value;
+			return val > int.MaxValue ? (object)null : (int)val;
+		};
+		public static readonly Func<object, object> UInt64ToUInt32 = (object value) => {
+			ulong val = (ulong)value;
+			return val > uint.MaxValue ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> UInt64ToInt64 = (object value) => {
+			ulong val = (ulong)value;
+			return val > long.MaxValue ? (object)null : (long)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> UInt64ToSingle = (object value) => (float)(ulong)value;
 		public static readonly Func<object, object> UInt64ToDouble = (object value) => (double)(ulong)value;
 		public static readonly Func<object, object> UInt64ToDecimal = (object value) => (decimal)(ulong)value;
 		public static readonly Func<object, object> UInt64ToBigInteger = (object value) => (BigInteger)(ulong)value;
+
+		// Unchecked
+		public static readonly Func<object, object> UInt64ToChar_Unchecked = (object value) => unchecked((char)(ulong)value);
+		public static readonly Func<object, object> UInt64ToSByte_Unchecked = (object value) => unchecked((sbyte)(ulong)value);
+		public static readonly Func<object, object> UInt64ToByte_Unchecked = (object value) => unchecked((byte)(ulong)value);
+		public static readonly Func<object, object> UInt64ToInt16_Unchecked = (object value) => unchecked((short)(ulong)value);
+		public static readonly Func<object, object> UInt64ToUInt16_Unchecked = (object value) => unchecked((ushort)(ulong)value);
+		public static readonly Func<object, object> UInt64ToInt32_Unchecked = (object value) => unchecked((int)(ulong)value);
+		public static readonly Func<object, object> UInt64ToUInt32_Unchecked = (object value) => unchecked((uint)(ulong)value);
+		public static readonly Func<object, object> UInt64ToInt64_Unchecked = (object value) => unchecked((long)(ulong)value);
 
 		// Checked
 		public static readonly Func<object, object> UInt64ToChar_Checked = (object value) => checked((char)(ulong)value);
@@ -489,19 +699,101 @@ namespace Axion.Conversion
 		#endregion UInt64
 
 		#region Single
-		public static readonly Func<object, object> SingleToChar = (object value) => (char)(float)value;
-		public static readonly Func<object, object> SingleToSByte = (object value) => (sbyte)(float)value;
-		public static readonly Func<object, object> SingleToByte = (object value) => (byte)(float)value;
-		public static readonly Func<object, object> SingleToInt16 = (object value) => (short)(float)value;
-		public static readonly Func<object, object> SingleToUInt16 = (object value) => (ushort)(float)value;
-		public static readonly Func<object, object> SingleToInt32 = (object value) => (int)(float)value;
-		public static readonly Func<object, object> SingleToUInt32 = (object value) => (uint)(float)value;
-		public static readonly Func<object, object> SingleToInt64 = (object value) => (long)(float)value;
-		public static readonly Func<object, object> SingleToUInt64 = (object value) => (ulong)(float)value;
-		//public static readonly Func<object, object> SingleToSingle = (object value) => (float)(float)value;
+		private static int? _DoubleToInt32(double val, double min, double max)
+		{
+			if (val >= 0) {
+				if (val <= max) {
+					int result = (int)val;
+					double dif = val - result;
+					if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+						result++;
+					return result;
+				}
+			}
+			else if (val >= min) {
+				int result = (int)val;
+				double dif = val - result;
+				if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+					result++;
+				return result;
+			}
+			return null;
+		}
+
+		private static uint? _DoubleToUInt32(double val, double max)
+		{
+			if (val >= -0.5 && val < max) {
+				uint result = (uint)val;
+				double dif = val - result;
+				if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+					result++;
+				return result;
+			}
+			return null;
+		}
+
+		private static long? _DoubleToInt64(double val, double min, double max)
+		{
+			if (val >= 0) {
+				if (val < max) {
+					long result = (long)val;
+					double dif = val - result;
+					if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+						result++;
+					return result;
+				}
+			}
+			else if (val >= min) {
+				int result = (int)val;
+				double dif = val - result;
+				if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+					result++;
+				return result;
+			}
+			return null;
+		}
+
+		private static ulong? _DoubleToUInt64(double val, double max)
+		{
+			if (val >= -0.5 && val < max) {
+				ulong result = (ulong)val;
+				double dif = val - result;
+				if (dif > 0.5 || (dif == 0.5 && (result & 1) != 0))
+					result++;
+				return result;
+			}
+			return null;
+		}
+
+		// Checked (null)
+		public static readonly Func<object, object> SingleToSByte = (object value) => (sbyte)(int)_DoubleToInt32((float)value, sbyte.MinValue - 0.5, sbyte.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToByte = (object value) => (byte)(int)_DoubleToInt32((float)value, byte.MinValue - 0.5, byte.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToInt16 = (object value) => (short)(int)_DoubleToInt32((float)value, short.MinValue - 0.5, short.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToUInt16 = (object value) => (ushort)(int)_DoubleToInt32((float)value, ushort.MinValue - 0.5, ushort.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToInt32 = (object value) => _DoubleToInt32((float)value, int.MinValue - 0.5, int.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToUInt32 = (object value) => _DoubleToUInt32((float)value, uint.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToInt64 = (object value) => _DoubleToInt64((float)value, long.MinValue - 0.5, long.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToUInt64 = (object value) => _DoubleToUInt64((float)value, ulong.MaxValue + 0.5);
+		public static readonly Func<object, object> SingleToDecimal = (object value) => {
+			float val = (float)value;
+			return val < (float)decimal.MinValue || val > (float)decimal.MaxValue ? (decimal?)null : ((decimal)val);
+		};
+
+		// Default
 		public static readonly Func<object, object> SingleToDouble = (object value) => (double)(float)value;
-		public static readonly Func<object, object> SingleToDecimal = (object value) => (decimal)(float)value;
 		public static readonly Func<object, object> SingleToBigInteger = (object value) => (BigInteger)(float)value;
+
+		// Unchecked
+		public static readonly Func<object, object> SingleToChar_Unchecked = (object value) => unchecked((char)(float)value);
+		public static readonly Func<object, object> SingleToSByte_Unchecked = (object value) => unchecked((sbyte)(float)value);
+		public static readonly Func<object, object> SingleToByte_Unchecked = (object value) => unchecked((byte)(float)value);
+		public static readonly Func<object, object> SingleToInt16_Unchecked = (object value) => unchecked((short)(float)value);
+		public static readonly Func<object, object> SingleToUInt16_Unchecked = (object value) => unchecked((ushort)(float)value);
+		public static readonly Func<object, object> SingleToInt32_Unchecked = (object value) => unchecked((int)(float)value);
+		public static readonly Func<object, object> SingleToUInt32_Unchecked = (object value) => unchecked((uint)(float)value);
+		public static readonly Func<object, object> SingleToInt64_Unchecked = (object value) => unchecked((long)(float)value);
+		public static readonly Func<object, object> SingleToUInt64_Unchecked = (object value) => unchecked((ulong)(float)value);
+		public static readonly Func<object, object> SingleToDecimal_Unchecked = (object value) => unchecked((decimal)(float)value);
 
 		// Checked
 		public static readonly Func<object, object> SingleToChar_Checked = (object value) => checked((char)(float)value);
@@ -517,19 +809,39 @@ namespace Axion.Conversion
 		#endregion Single
 
 		#region Double
-		public static readonly Func<object, object> DoubleToChar = (object value) => (char)(double)value;
-		public static readonly Func<object, object> DoubleToSByte = (object value) => (sbyte)(double)value;
-		public static readonly Func<object, object> DoubleToByte = (object value) => (byte)(double)value;
-		public static readonly Func<object, object> DoubleToInt16 = (object value) => (short)(double)value;
-		public static readonly Func<object, object> DoubleToUInt16 = (object value) => (ushort)(double)value;
-		public static readonly Func<object, object> DoubleToInt32 = (object value) => (int)(double)value;
-		public static readonly Func<object, object> DoubleToUInt32 = (object value) => (uint)(double)value;
-		public static readonly Func<object, object> DoubleToInt64 = (object value) => (long)(double)value;
-		public static readonly Func<object, object> DoubleToUInt64 = (object value) => (ulong)(double)value;
-		public static readonly Func<object, object> DoubleToSingle = (object value) => (float)(double)value;
-		//public static readonly Func<object, object> DoubleToDouble = (object value) => (double)(double)value;
-		public static readonly Func<object, object> DoubleToDecimal = (object value) => (decimal)(double)value;
+		// Checked (null)
+		public static readonly Func<object, object> DoubleToSByte = (object value) => (sbyte)(int)_DoubleToInt32((double)value, sbyte.MinValue - 0.5, sbyte.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToByte = (object value) => (byte)(int)_DoubleToInt32((double)value, byte.MinValue - 0.5, byte.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToInt16 = (object value) => (short)(int)_DoubleToInt32((double)value, short.MinValue - 0.5, short.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToUInt16 = (object value) => (ushort)(int)_DoubleToInt32((double)value, ushort.MinValue - 0.5, ushort.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToInt32 = (object value) => _DoubleToInt32((double)value, int.MinValue - 0.5, int.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToUInt32 = (object value) => _DoubleToUInt32((double)value, uint.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToInt64 = (object value) => _DoubleToInt64((double)value, long.MinValue - 0.5, long.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToUInt64 = (object value) => _DoubleToUInt64((double)value, ulong.MaxValue + 0.5);
+		public static readonly Func<object, object> DoubleToSingle = (object value) => {
+			double val = (double)value;
+			return val < float.MinValue || val > float.MaxValue ? (object)null : (float)val;
+		};
+		public static readonly Func<object, object> DoubleToDecimal = (object value) => {
+			double val = (double)value;
+			return val < (double)decimal.MinValue || val > (double)decimal.MaxValue ? (object)null : (decimal)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> DoubleToBigInteger = (object value) => (BigInteger)(double)value;
+
+		// Unchecked
+		public static readonly Func<object, object> DoubleToChar_Unchecked = (object value) => unchecked((char)(double)value);
+		public static readonly Func<object, object> DoubleToSByte_Unchecked = (object value) => unchecked((sbyte)(double)value);
+		public static readonly Func<object, object> DoubleToByte_Unchecked = (object value) => unchecked((byte)(double)value);
+		public static readonly Func<object, object> DoubleToInt16_Unchecked = (object value) => unchecked((short)(double)value);
+		public static readonly Func<object, object> DoubleToUInt16_Unchecked = (object value) => unchecked((ushort)(double)value);
+		public static readonly Func<object, object> DoubleToInt32_Unchecked = (object value) => unchecked((int)(double)value);
+		public static readonly Func<object, object> DoubleToUInt32_Unchecked = (object value) => unchecked((uint)(double)value);
+		public static readonly Func<object, object> DoubleToInt64_Unchecked = (object value) => unchecked((long)(double)value);
+		public static readonly Func<object, object> DoubleToUInt64_Unchecked = (object value) => unchecked((ulong)(double)value);
+		public static readonly Func<object, object> DoubleToSingle_Unchecked = (object value) => unchecked((float)(double)value);
+		public static readonly Func<object, object> DoubleToDecimal_Unchecked = (object value) => unchecked((decimal)(double)value);
 
 		// Checked
 		public static readonly Func<object, object> DoubleToChar_Checked = (object value) => checked((char)(double)value);
@@ -546,19 +858,55 @@ namespace Axion.Conversion
 		#endregion Double
 
 		#region Decimal
-		public static readonly Func<object, object> DecimalToChar = (object value) => (char)(decimal)value;
-		public static readonly Func<object, object> DecimalToSByte = (object value) => (sbyte)(decimal)value;
-		public static readonly Func<object, object> DecimalToByte = (object value) => (byte)(decimal)value;
-		public static readonly Func<object, object> DecimalToInt16 = (object value) => (short)(decimal)value;
-		public static readonly Func<object, object> DecimalToUInt16 = (object value) => (ushort)(decimal)value;
-		public static readonly Func<object, object> DecimalToInt32 = (object value) => (int)(decimal)value;
-		public static readonly Func<object, object> DecimalToUInt32 = (object value) => (uint)(decimal)value;
-		public static readonly Func<object, object> DecimalToInt64 = (object value) => (long)(decimal)value;
-		public static readonly Func<object, object> DecimalToUInt64 = (object value) => (ulong)(decimal)value;
+		// Checked (null)
+		public static readonly Func<object, object> DecimalToSByte = (object value) => {
+			decimal val = (decimal)value;
+			return val < sbyte.MinValue || val > sbyte.MaxValue ? (object)null : (sbyte)val;
+		};
+		public static readonly Func<object, object> DecimalToByte = (object value) => {
+			decimal val = (decimal)value;
+			return val < 0 || val > byte.MaxValue ? (object)null : (byte)val;
+		};
+		public static readonly Func<object, object> DecimalToInt16 = (object value) => {
+			decimal val = (decimal)value;
+			return val < short.MinValue || val > short.MaxValue ? (object)null : (short)val;
+		};
+		public static readonly Func<object, object> DecimalToUInt16 = (object value) => {
+			decimal val = (decimal)value;
+			return val < 0 || val > ushort.MaxValue ? (object)null : (ushort)val;
+		};
+		public static readonly Func<object, object> DecimalToInt32 = (object value) => {
+			decimal val = (decimal)value;
+			return val < int.MinValue || val > int.MaxValue ? (object)null : (int)val;
+		};
+		public static readonly Func<object, object> DecimalToUInt32 = (object value) => {
+			decimal val = (decimal)value;
+			return val < 0 || val > uint.MaxValue ? (object)null : (uint)val;
+		};
+		public static readonly Func<object, object> DecimalToInt64 = (object value) => {
+			decimal val = (decimal)value;
+			return val < long.MinValue || val > long.MaxValue ? (object)null : (long)val;
+		};
+		public static readonly Func<object, object> DecimalToUInt64 = (object value) => {
+			decimal val = (decimal)value;
+			return val < 0 || val > ulong.MaxValue ? (object)null : (ulong)val;
+		};
+
+		// Default
 		public static readonly Func<object, object> DecimalToSingle = (object value) => (float)(decimal)value;
 		public static readonly Func<object, object> DecimalToDouble = (object value) => (double)(decimal)value;
-		//public static readonly Func<object, object> DecimalToDecimal = (object value) => (decimal)(decimal)value;
 		public static readonly Func<object, object> DecimalToBigInteger = (object value) => (BigInteger)(decimal)value;
+
+		// Unchecked
+		public static readonly Func<object, object> DecimalToChar_Unchecked = (object value) => unchecked((char)(decimal)value);
+		public static readonly Func<object, object> DecimalToSByte_Unchecked = (object value) => unchecked((sbyte)(decimal)value);
+		public static readonly Func<object, object> DecimalToByte_Unchecked = (object value) => unchecked((byte)(decimal)value);
+		public static readonly Func<object, object> DecimalToInt16_Unchecked = (object value) => unchecked((short)(decimal)value);
+		public static readonly Func<object, object> DecimalToUInt16_Unchecked = (object value) => unchecked((ushort)(decimal)value);
+		public static readonly Func<object, object> DecimalToInt32_Unchecked = (object value) => unchecked((int)(decimal)value);
+		public static readonly Func<object, object> DecimalToUInt32_Unchecked = (object value) => unchecked((uint)(decimal)value);
+		public static readonly Func<object, object> DecimalToInt64_Unchecked = (object value) => unchecked((long)(decimal)value);
+		public static readonly Func<object, object> DecimalToUInt64_Unchecked = (object value) => unchecked((ulong)(decimal)value);
 
 		// Checked
 		public static readonly Func<object, object> DecimalToChar_Checked = (object value) => checked((char)(decimal)value);
@@ -1023,17 +1371,17 @@ namespace Axion.Conversion
 			null, // 2 = DBNull
 			null, // 3 = Boolean
 			None, // 4 = Char
-			SByteToChar, // 5 = SByte
+			SByteToChar_Unchecked, // 5 = SByte
 			ByteToChar, // 6 = Byte
-			Int16ToChar, // 7 = Int16
+			Int16ToChar_Unchecked, // 7 = Int16
 			UInt16ToChar, // 8 = UInt16
-			Int32ToChar, // 9 = Int32
-			UInt32ToChar, // 10 = UInt32
-			Int64ToChar, // 11 = Int64
-			UInt64ToChar, // 12 = UInt64
-			SingleToChar, // 13 = Single
-			DoubleToChar, // 14 = Double
-			DecimalToChar, // 15 = Decimal
+			Int32ToChar_Unchecked, // 9 = Int32
+			UInt32ToChar_Unchecked, // 10 = UInt32
+			Int64ToChar_Unchecked, // 11 = Int64
+			UInt64ToChar_Unchecked, // 12 = UInt64
+			SingleToChar_Unchecked, // 13 = Single
+			DoubleToChar_Unchecked, // 14 = Double
+			DecimalToChar_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1042,19 +1390,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
-			CharToSByte, // 4 = Char
+			BooleanToSByte, // 3 = Boolean
+			CharToSByte_Unchecked, // 4 = Char
 			None, // 5 = SByte
-			ByteToSByte, // 6 = Byte
-			Int16ToSByte, // 7 = Int16
-			UInt16ToSByte, // 8 = UInt16
-			Int32ToSByte, // 9 = Int32
-			UInt32ToSByte, // 10 = UInt32
-			Int64ToSByte, // 11 = Int64
-			UInt64ToSByte, // 12 = UInt64
-			SingleToSByte, // 13 = Single
-			DoubleToSByte, // 14 = Double
-			DecimalToSByte, // 15 = Decimal
+			ByteToSByte_Unchecked, // 6 = Byte
+			Int16ToSByte_Unchecked, // 7 = Int16
+			UInt16ToSByte_Unchecked, // 8 = UInt16
+			Int32ToSByte_Unchecked, // 9 = Int32
+			UInt32ToSByte_Unchecked, // 10 = UInt32
+			Int64ToSByte_Unchecked, // 11 = Int64
+			UInt64ToSByte_Unchecked, // 12 = UInt64
+			SingleToSByte_Unchecked, // 13 = Single
+			DoubleToSByte_Unchecked, // 14 = Double
+			DecimalToSByte_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1063,19 +1411,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
-			CharToByte, // 4 = Char
-			SByteToByte, // 5 = SByte
+			BooleanToByte, // 3 = Boolean
+			CharToByte_Unchecked, // 4 = Char
+			SByteToByte_Unchecked, // 5 = SByte
 			None, // 6 = Byte
-			Int16ToByte, // 7 = Int16
-			UInt16ToByte, // 8 = UInt16
-			Int32ToByte, // 9 = Int32
-			UInt32ToByte, // 10 = UInt32
-			Int64ToByte, // 11 = Int64
-			UInt64ToByte, // 12 = UInt64
-			SingleToByte, // 13 = Single
-			DoubleToByte, // 14 = Double
-			DecimalToByte, // 15 = Decimal
+			Int16ToByte_Unchecked, // 7 = Int16
+			UInt16ToByte_Unchecked, // 8 = UInt16
+			Int32ToByte_Unchecked, // 9 = Int32
+			UInt32ToByte_Unchecked, // 10 = UInt32
+			Int64ToByte_Unchecked, // 11 = Int64
+			UInt64ToByte_Unchecked, // 12 = UInt64
+			SingleToByte_Unchecked, // 13 = Single
+			DoubleToByte_Unchecked, // 14 = Double
+			DecimalToByte_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1084,19 +1432,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
-			CharToInt16, // 4 = Char
+			BooleanToInt16, // 3 = Boolean
+			CharToInt16_Unchecked, // 4 = Char
 			SByteToInt16, // 5 = SByte
 			ByteToInt16, // 6 = Byte
 			None, // 7 = Int16
-			UInt16ToInt16, // 8 = UInt16
-			Int32ToInt16, // 9 = Int32
-			UInt32ToInt16, // 10 = UInt32
-			Int64ToInt16, // 11 = Int64
-			UInt64ToInt16, // 12 = UInt64
-			SingleToInt16, // 13 = Single
-			DoubleToInt16, // 14 = Double
-			DecimalToInt16, // 15 = Decimal
+			UInt16ToInt16_Unchecked, // 8 = UInt16
+			Int32ToInt16_Unchecked, // 9 = Int32
+			UInt32ToInt16_Unchecked, // 10 = UInt32
+			Int64ToInt16_Unchecked, // 11 = Int64
+			UInt64ToInt16_Unchecked, // 12 = UInt64
+			SingleToInt16_Unchecked, // 13 = Single
+			DoubleToInt16_Unchecked, // 14 = Double
+			DecimalToInt16_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1105,19 +1453,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt16, // 3 = Boolean
 			CharToUInt16, // 4 = Char
-			SByteToUInt16, // 5 = SByte
+			SByteToUInt16_Unchecked, // 5 = SByte
 			ByteToUInt16, // 6 = Byte
-			Int16ToUInt16, // 7 = Int16
+			Int16ToUInt16_Unchecked, // 7 = Int16
 			None, // 8 = UInt16
-			Int32ToUInt16, // 9 = Int32
-			UInt32ToUInt16, // 10 = UInt32
-			Int64ToUInt16, // 11 = Int64
-			UInt64ToUInt16, // 12 = UInt64
-			SingleToUInt16, // 13 = Single
-			DoubleToUInt16, // 14 = Double
-			DecimalToUInt16, // 15 = Decimal
+			Int32ToUInt16_Unchecked, // 9 = Int32
+			UInt32ToUInt16_Unchecked, // 10 = UInt32
+			Int64ToUInt16_Unchecked, // 11 = Int64
+			UInt64ToUInt16_Unchecked, // 12 = UInt64
+			SingleToUInt16_Unchecked, // 13 = Single
+			DoubleToUInt16_Unchecked, // 14 = Double
+			DecimalToUInt16_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1126,19 +1474,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToInt32, // 3 = Boolean
 			CharToInt32, // 4 = Char
 			SByteToInt32, // 5 = SByte
 			ByteToInt32, // 6 = Byte
 			Int16ToInt32, // 7 = Int16
 			UInt16ToInt32, // 8 = UInt16
 			None, // 9 = Int32
-			UInt32ToInt32, // 10 = UInt32
-			Int64ToInt32, // 11 = Int64
-			UInt64ToInt32, // 12 = UInt64
-			SingleToInt32, // 13 = Single
-			DoubleToInt32, // 14 = Double
-			DecimalToInt32, // 15 = Decimal
+			UInt32ToInt32_Unchecked, // 10 = UInt32
+			Int64ToInt32_Unchecked, // 11 = Int64
+			UInt64ToInt32_Unchecked, // 12 = UInt64
+			SingleToInt32_Unchecked, // 13 = Single
+			DoubleToInt32_Unchecked, // 14 = Double
+			DecimalToInt32_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1147,19 +1495,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt32, // 3 = Boolean
 			CharToUInt32, // 4 = Char
-			SByteToUInt32, // 5 = SByte
+			SByteToUInt32_Unchecked, // 5 = SByte
 			ByteToUInt32, // 6 = Byte
-			Int16ToUInt32, // 7 = Int16
+			Int16ToUInt32_Unchecked, // 7 = Int16
 			UInt16ToUInt32, // 8 = UInt16
-			Int32ToUInt32, // 9 = Int32
+			Int32ToUInt32_Unchecked, // 9 = Int32
 			None, // 10 = UInt32
-			Int64ToUInt32, // 11 = Int64
-			UInt64ToUInt32, // 12 = UInt64
-			SingleToUInt32, // 13 = Single
-			DoubleToUInt32, // 14 = Double
-			DecimalToUInt32, // 15 = Decimal
+			Int64ToUInt32_Unchecked, // 11 = Int64
+			UInt64ToUInt32_Unchecked, // 12 = UInt64
+			SingleToUInt32_Unchecked, // 13 = Single
+			DoubleToUInt32_Unchecked, // 14 = Double
+			DecimalToUInt32_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1168,7 +1516,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToInt64, // 3 = Boolean
 			CharToInt64, // 4 = Char
 			SByteToInt64, // 5 = SByte
 			ByteToInt64, // 6 = Byte
@@ -1177,10 +1525,10 @@ namespace Axion.Conversion
 			Int32ToInt64, // 9 = Int32
 			UInt32ToInt64, // 10 = UInt32
 			None, // 11 = Int64
-			UInt64ToInt64, // 12 = UInt64
-			SingleToInt64, // 13 = Single
-			DoubleToInt64, // 14 = Double
-			DecimalToInt64, // 15 = Decimal
+			UInt64ToInt64_Unchecked, // 12 = UInt64
+			SingleToInt64_Unchecked, // 13 = Single
+			DoubleToInt64_Unchecked, // 14 = Double
+			DecimalToInt64_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1189,19 +1537,19 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt64, // 3 = Boolean
 			CharToUInt64, // 4 = Char
-			SByteToUInt64, // 5 = SByte
+			SByteToUInt64_Unchecked, // 5 = SByte
 			ByteToUInt64, // 6 = Byte
-			Int16ToUInt64, // 7 = Int16
+			Int16ToUInt64_Unchecked, // 7 = Int16
 			UInt16ToUInt64, // 8 = UInt16
-			Int32ToUInt64, // 9 = Int32
+			Int32ToUInt64_Unchecked, // 9 = Int32
 			UInt32ToUInt64, // 10 = UInt32
-			Int64ToUInt64, // 11 = Int64
+			Int64ToUInt64_Unchecked, // 11 = Int64
 			None, // 12 = UInt64
-			SingleToUInt64, // 13 = Single
-			DoubleToUInt64, // 14 = Double
-			DecimalToUInt64, // 15 = Decimal
+			SingleToUInt64_Unchecked, // 13 = Single
+			DoubleToUInt64_Unchecked, // 14 = Double
+			DecimalToUInt64_Unchecked, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
 			null, // 18 = String
@@ -1210,7 +1558,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToSingle, // 3 = Boolean
 			CharToSingle, // 4 = Char
 			SByteToSingle, // 5 = SByte
 			ByteToSingle, // 6 = Byte
@@ -1221,7 +1569,7 @@ namespace Axion.Conversion
 			Int64ToSingle, // 11 = Int64
 			UInt64ToSingle, // 12 = UInt64
 			None, // 13 = Single
-			DoubleToSingle, // 14 = Double
+			DoubleToSingle_Unchecked, // 14 = Double
 			DecimalToSingle, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
@@ -1231,7 +1579,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToDouble, // 3 = Boolean
 			CharToDouble, // 4 = Char
 			SByteToDouble, // 5 = SByte
 			ByteToDouble, // 6 = Byte
@@ -1252,7 +1600,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToDecimal, // 3 = Boolean
 			CharToDecimal, // 4 = Char
 			SByteToDecimal, // 5 = SByte
 			ByteToDecimal, // 6 = Byte
@@ -1262,8 +1610,8 @@ namespace Axion.Conversion
 			UInt32ToDecimal, // 10 = UInt32
 			Int64ToDecimal, // 11 = Int64
 			UInt64ToDecimal, // 12 = UInt64
-			SingleToDecimal, // 13 = Single
-			DoubleToDecimal, // 14 = Double
+			SingleToDecimal_Unchecked, // 13 = Single
+			DoubleToDecimal_Unchecked, // 14 = Double
 			None, // 15 = Decimal
 			null, // 16 = DateTime
 			null, // 17 = ??
@@ -1301,7 +1649,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToSByte, // 3 = Boolean
 			CharToSByte, // 4 = Char
 			None, // 5 = SByte
 			ByteToSByte_Checked, // 6 = Byte
@@ -1322,7 +1670,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToByte, // 3 = Boolean
 			CharToByte, // 4 = Char
 			SByteToByte_Checked, // 5 = SByte
 			None, // 6 = Byte
@@ -1343,7 +1691,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToInt16, // 3 = Boolean
 			CharToInt16, // 4 = Char
 			SByteToInt16, // 5 = SByte
 			ByteToInt16, // 6 = Byte
@@ -1364,7 +1712,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt16, // 3 = Boolean
 			CharToUInt16, // 4 = Char
 			SByteToUInt16_Checked, // 5 = SByte
 			ByteToUInt16, // 6 = Byte
@@ -1385,7 +1733,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToInt32, // 3 = Boolean
 			CharToInt32, // 4 = Char
 			SByteToInt32, // 5 = SByte
 			ByteToInt32, // 6 = Byte
@@ -1406,7 +1754,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt32, // 3 = Boolean
 			CharToUInt32, // 4 = Char
 			SByteToUInt32_Checked, // 5 = SByte
 			ByteToUInt32, // 6 = Byte
@@ -1427,7 +1775,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToInt64, // 3 = Boolean
 			CharToInt64, // 4 = Char
 			SByteToInt64, // 5 = SByte
 			ByteToInt64, // 6 = Byte
@@ -1448,7 +1796,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToUInt64, // 3 = Boolean
 			CharToUInt64, // 4 = Char
 			SByteToUInt64_Checked, // 5 = SByte
 			ByteToUInt64, // 6 = Byte
@@ -1469,7 +1817,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToSingle, // 3 = Boolean
 			CharToSingle, // 4 = Char
 			SByteToSingle, // 5 = SByte
 			ByteToSingle, // 6 = Byte
@@ -1490,7 +1838,7 @@ namespace Axion.Conversion
 			null, // 0 = Empty 
 			null, // 1 = Object
 			null, // 2 = DBNull
-			null, // 3 = Boolean
+			BooleanToDecimal, // 3 = Boolean
 			CharToDecimal, // 4 = Char
 			SByteToDecimal, // 5 = SByte
 			ByteToDecimal, // 6 = Byte
@@ -1655,27 +2003,29 @@ namespace Axion.Conversion
 		public static readonly Func<object, object> DateTimeOffsetToDateTime = (object value) => ((DateTimeOffset)value).DateTime;
 
 		/// <summary>
-		/// Tries to parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No", and whitespace.
+		/// Tries to parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No", null, and String.Empty.
 		/// </summary>
 		public static readonly Func<object, object> TryParseBooleanEx = (object value) => {
-			string str = value as string;
-			if (str == "1" || string.Equals(str, "True", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "Yes", StringComparison.OrdinalIgnoreCase))
-				return true;
-			if (string.IsNullOrWhiteSpace(str) || str == "0" || string.Equals(str, "False", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "No", StringComparison.OrdinalIgnoreCase))
+			string str = (string)value;
+			if (str == null || str.Length == 0)
 				return false;
+			if (char.IsWhiteSpace(str[0]) || char.IsWhiteSpace(str[str.Length - 1]))
+				str = str.Trim();
+			if (str.Length > 0) {
+				if (str == "0" || string.Equals(str, "False", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "No", StringComparison.OrdinalIgnoreCase))
+					return false;
+				if (str == "1" || string.Equals(str, "True", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "Yes", StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
 			return null;
 		};
 
 		/// <summary>
-		/// Parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No" and whitespace.
+		/// Parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No", null, and String.Empty.
 		/// </summary>
 		public static readonly Func<object, object> ParseBooleanEx = (object value) => {
-			string str = value as string;
-			if (str == "1" || string.Equals(str, "True", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "Yes", StringComparison.OrdinalIgnoreCase))
-				return true;
-			if (string.IsNullOrWhiteSpace(str) || str == "0" || string.Equals(str, "False", StringComparison.OrdinalIgnoreCase) || string.Equals(str, "No", StringComparison.OrdinalIgnoreCase))
-				return true;
-			return bool.Parse(str);
+			object result = TryParseBooleanEx(value);
+			return result ?? bool.Parse((string)value);
 		};
 	}
 }
