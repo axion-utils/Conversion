@@ -4,8 +4,8 @@
 
 This package is intended to replace System.Convert. Some key differences include:
 1. Custom conversion is supported through inheritance. Only null and typeof(object) are treated as special cases. 
-See [TypeConvertEx](https://github.com/axion-utils/Conversion/blob/master/Conversion/TypeConvertEx.cs) for an example of how to do this.
-2. Enums are supported by default.
+See [TypeConvertDefault](https://github.com/axion-utils/Conversion/blob/master/Conversion/TypeConvertDefault.cs) for an example of how to do this.
+2. Enums are supported.
 3. Exceptions can be prevented without using a try catch.
 4. Functions can be reused when converting lists of objects.
 5. TypeConvert.CanConvertTo is more accurate than System.ComponentModel.TypeConverter.CanConvertTo.
@@ -33,14 +33,10 @@ public static void Main()
 	value = converter("5");
 	Console.WriteLine(value + " " + value.GetType().Name); // 5 char
 
-	// throws an exception for numeric overflow
+	// prevents numeric overflow
 	value = ((long)int.MaxValue) + 1;
 	bool success = TypeConvert.Default.TryChangeType(value, typeof(int), out object result);
 	Console.WriteLine(success + " " + (result ?? "null")); // False null
-
-	// allows numeric overflow
-	success = TypeConvert.Safe.TryChangeType(value, typeof(int), out result);
-	Console.WriteLine(success + " " + (result ?? "null")); // True -2147483648
 
 	// Enum conversions are case sensitive
 	value = TypeConvert.Default.ChangeType(DayOfWeek.Friday.ToString(), typeof(DayOfWeek));

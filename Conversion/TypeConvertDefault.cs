@@ -29,6 +29,11 @@ namespace Axion.Conversion
 	/// </summary>
 	public class TypeConvertDefault : TypeConvertBase
 	{
+		/// <summary>
+		/// Constructs a <see cref="TypeConvertDefault"/> and populates the conversion table with the default values.
+		/// </summary>
+		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
+		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
 		public TypeConvertDefault(bool threadSafe = true, bool tryParseEnum = true) : base(threadSafe, tryParseEnum)
 		{
 			for (int i = 0; i < 19; i++) {

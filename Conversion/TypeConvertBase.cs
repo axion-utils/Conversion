@@ -29,11 +29,11 @@ namespace Axion.Conversion
 	public class TypeConvertBase
 	{
 		/// <summary>
-		/// Construts a <see cref="TypeConvert"/>.
+		/// Constructs a <see cref="TypeConvertBase"/> and copies the conversions from another <see cref="TypeConvertBase"/>.
 		/// </summary>
 		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
 		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
-		/// <param name="copyFrom">The <see cref="TypeConvert"/> to clone.</param>
+		/// <param name="copyFrom">The <see cref="TypeConvertBase"/> to copy converters from.</param>
 		public TypeConvertBase(bool threadSafe, bool tryParseEnum, TypeConvertBase copyFrom) : this(threadSafe, tryParseEnum)
 		{
 			if (copyFrom != null) {
@@ -60,7 +60,11 @@ namespace Axion.Conversion
 			}
 		}
 
-
+		/// <summary>
+		/// Constructs an empty <see cref="TypeConvertBase"/>.
+		/// </summary>
+		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
+		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
 		public TypeConvertBase(bool threadSafe, bool tryParseEnum)
 		{
 			LookupCache = threadSafe
