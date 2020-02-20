@@ -6,7 +6,7 @@
     <Authors>Wesley Hamilton</Authors>
     <Description>A customizable alternative to C# System.Convert</Description>
     <NeutralLanguage>en-us</NeutralLanguage>
-    <PackageReleaseNotes>Fixed input = typeof(object).</PackageReleaseNotes>
+    <PackageReleaseNotes>Changed everything so it matches System.Convert by default.</PackageReleaseNotes>
     <PackageTags>convert cast transform</PackageTags>
     <PackageLicense>Apache-2.0</PackageLicense>
     <PackageProjectUrl>https://github.com/axion-utils/Conversion</PackageProjectUrl>
@@ -28,7 +28,6 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <Reference Include="System" />
 	<Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

@@ -13,12 +13,12 @@ namespace Axion
 		public readonly Type[] ParseTypes = new Type[] {
 			typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
 			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(string), typeof(DateTime),
-			 typeof(DateTimeOffset),  typeof(TimeSpan), typeof(Guid), typeof(BigInteger), typeof(DayOfWeek), typeof(DateTimeKind)
+			 typeof(DateTimeOffset),  typeof(TimeSpan), typeof(Guid), typeof(DayOfWeek), typeof(DateTimeKind)
 		};
 		public readonly object[] ParseValues = new object[] {
 			sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
 			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue, decimal.MaxValue, "abc", DateTime.Now,
-			DateTimeOffset.UtcNow, new TimeSpan(5, 3, 8), Guid.NewGuid(), new BigInteger(ulong.MaxValue) + 1, DayOfWeek.Wednesday, DateTimeKind.Local
+			DateTimeOffset.UtcNow, new TimeSpan(5, 3, 8), Guid.NewGuid(), DayOfWeek.Wednesday, DateTimeKind.Local
 		};
 		public readonly Type[] BasicTypes = new Type[] {
 			typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
@@ -26,33 +26,64 @@ namespace Axion
 		};
 		public readonly Type[] NumericTypes = new Type[] {
 			typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
-			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger)
+			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal)
 		};
 		public readonly object[] ZeroValues = new object[] {
 			(sbyte)0, (byte)0, (short)0, (ushort)0, (int)0, (uint)0U,
-			(long)0L, (ulong)0UL, (float)0.0f, (double)0.0, (decimal)0.0m, (BigInteger)0
+			(long)0L, (ulong)0UL, (float)0.0f, (double)0.0, (decimal)0.0m,
 		};
 		public readonly object[] OneValues = new object[] {
 			(sbyte)1, (byte)1, (short)1, (ushort)1, (int)1, (uint)1U,
-			(long)1L, (ulong)1UL, (float)1.0f, (double)1.0, (decimal)1.0m, (BigInteger)1
+			(long)1L, (ulong)1UL, (float)1.0f, (double)1.0, (decimal)1.0m,
 		};
 		public readonly object[] MinValues = new object[] {
 			sbyte.MinValue, byte.MinValue, short.MinValue, ushort.MinValue, int.MinValue, uint.MinValue,
-			long.MinValue, ulong.MinValue, float.MinValue, double.MinValue *0.98, decimal.MinValue,(BigInteger)float.MinValue
+			long.MinValue, ulong.MinValue, float.MinValue, double.MinValue *0.98, decimal.MinValue,
 		};
 		public readonly object[] MaxValues = new object[] {
 			sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
-			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue *0.98, decimal.MaxValue,(BigInteger)float.MaxValue
+			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue *0.98, decimal.MaxValue,
 		};
 		public readonly Type[] NonNumericTypes = new Type[] {
 			typeof(Guid), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan)
 		};
 
-		public readonly List<object> BigIntegers = new List<object>() { (BigInteger)0, (BigInteger)1, new BigInteger(long.MinValue) - 1, new BigInteger(ulong.MaxValue) + 1 };
+		public readonly List<object> DBnNulls = new List<object>() { DBNull.Value };
+		public readonly List<object> Booleans = new List<object>() { false, true };
+		public readonly List<object> Chars = new List<object>() { (char)0, (char)1, char.MinValue, char.MaxValue };
+		public readonly List<object> SBytes = new List<object>() { (sbyte)0, (sbyte)1, sbyte.MinValue, sbyte.MaxValue, (sbyte)-1 };
+		public readonly List<object> Bytes = new List<object>() { (byte)0, (byte)1, byte.MinValue, byte.MaxValue };
+		public readonly List<object> Int16s = new List<object>() { (short)0, (short)1, short.MinValue, short.MaxValue, (short)-1 };
+		public readonly List<object> UInt16s = new List<object>() { (ushort)0, (ushort)1, ushort.MinValue, ushort.MaxValue };
+		public readonly List<object> Int32s = new List<object>() { (int)0, (int)1, int.MinValue, int.MaxValue, (int)-1 };
+		public readonly List<object> UInt32s = new List<object>() { (uint)0, (uint)1, uint.MinValue, uint.MaxValue };
+		public readonly List<object> Int64s = new List<object>() { (long)0, (long)1, long.MinValue, long.MaxValue, (long)-1 };
+		public readonly List<object> UInt64s = new List<object>() { (ulong)0, (ulong)1, ulong.MinValue, ulong.MaxValue };
+
+		public readonly List<object> Singles = new List<object>() { (float)0, (float)1, float.MinValue, float.MaxValue, (float)-1, -1.5f, 2.5f, 9.66666f };
+		public readonly List<object> Doubles = new List<object>() { (double)0, (double)1, double.MinValue, double.MaxValue, (double)-1, -1.5, 2.5, 9.66666 };
+		public readonly List<object> Decimals = new List<object>() { (decimal)0, (decimal)1, decimal.MinValue, decimal.MaxValue, (decimal)-1, -1.5M, 2.5M, 9.6666M };
 		public readonly List<object> DateTimes = new List<object>() { new DateTime(), new DateTime(1), DateTime.Now, DateTime.UtcNow, DateTime.MinValue, DateTime.MaxValue };
+		public readonly List<object> Strings = new List<object>() { "0", "1", "", "TRUE", "False", "YES", "NO", "STR ING", "00:00:00", DateTime.Now.ToShortDateString(), DateTimeOffset.Now.ToString(), int.MaxValue.ToString(), int.MinValue.ToString() };
+
 		public readonly List<object> DateTimeOffsets = new List<object>() { DateTimeOffset.Now, DateTimeOffset.UtcNow, DateTimeOffset.MinValue, DateTimeOffset.MaxValue };
 		public readonly List<object> TimeSpans = new List<object>() { TimeSpan.Zero, DateTime.Now.TimeOfDay, TimeSpan.MinValue, TimeSpan.MaxValue };
-		public readonly List<object> Strings = new List<object>() { "0", "1", "", "TRUE", "FALSE", "YES", "NO", "STR ING", "00:00:00", DateTime.Now.ToShortDateString(), DateTimeOffset.Now.ToString(), };
+
+		[TestMethod]
+		public void TestAll()
+		{
+			List<object> allObjects = DBnNulls.Concat(Booleans).Concat(Chars).Concat(SBytes).Concat(Bytes).Concat(Int16s).Concat(UInt16s).Concat(Int32s).Concat(UInt32s)
+				.Concat(Int64s).Concat(UInt64s).Concat(Singles).Concat(Doubles).Concat(Decimals).Concat(DateTimes).Concat(Strings).Concat(DateTimeOffsets).Concat(TimeSpans).ToList();
+			List<Type> allTypes = allObjects.Select(o => o.GetType()).Distinct().ToList();
+
+			foreach (Type t in allTypes) {
+				foreach (object o in allObjects) {
+					TestAny(o, t);
+				}
+			}
+		}
+
+
 
 		[TestMethod]
 		public void TestNumericCanConvert()
@@ -141,7 +172,7 @@ namespace Axion
 		}
 
 		[TestMethod]
-		public void TestDBNull()
+		public void TestDBNullToType()
 		{
 			object val = DBNull.Value;
 			foreach (Type type in ParseTypes) {
@@ -170,10 +201,6 @@ namespace Axion
 				object zeroVal = ZeroValues[i];
 				object oneVal = OneValues[i];
 				foreach (Type type in NumericTypes) {
-					if (type == typeof(BigInteger) && zeroVal.GetType() == typeof(char))
-						continue;
-					if (type == typeof(char) && zeroVal.GetType() == typeof(BigInteger))
-						continue;
 					object result = TypeConvert.ChangeType(zeroVal, type);
 					Type zeroValType = zeroVal.GetType();
 					Type resultType = result?.GetType();
@@ -192,6 +219,7 @@ namespace Axion
 		public void TestNumericsAny()
 		{
 			for (int i = 0; i < MaxValues.Length; i++) {
+				Type valType = MaxValues[i].GetType();
 				object maxVal = MaxValues[i];
 				object minVal = MinValues[i];
 				object zeroVal = ZeroValues[i];
@@ -208,8 +236,8 @@ namespace Axion
 		[TestMethod]
 		public void TestChar()
 		{
-			for (int i = 0; i < NumericTypes.Length - 4; i++) {
-				// do not use BigInteger, float, double, decimal
+			for (int i = 0; i < NumericTypes.Length - 3; i++) {
+				// do not use float, double, decimal
 				Type type = NumericTypes[i];
 				if (type == typeof(float) || type == typeof(decimal) || type == typeof(double))
 					continue;
@@ -222,14 +250,14 @@ namespace Axion
 				resultTy = val.GetType();
 				Assert.AreEqual(type, resultTy);
 			}
-			for (int i = 0; i < OneValues.Length - 4; i++) {
+			for (int i = 0; i < OneValues.Length - 3; i++) {
 				object oneVal = OneValues[i];
 				object val = TypeConvert.ChangeType(oneVal, typeof(char));
 				Assert.IsNotNull(val);
 				Type type = val.GetType();
 				Assert.AreEqual(type, typeof(char));
 			}
-			for (int i = 0; i < ZeroValues.Length - 4; i++) {
+			for (int i = 0; i < ZeroValues.Length - 3; i++) {
 				object zeroVal = ZeroValues[i];
 				object val = TypeConvert.ChangeType(zeroVal, typeof(char));
 				Assert.IsNotNull(val);
@@ -242,8 +270,7 @@ namespace Axion
 		[TestMethod]
 		public void TestBoolean()
 		{
-			for(int i = 0; i < NumericTypes.Length - 1; i++) {
-				// do not use BigInteger
+			for(int i = 0; i < NumericTypes.Length; i++) {
 				Type type = NumericTypes[i];
 				object val = TypeConvert.ChangeType(true, type);
 				Assert.IsNotNull(val);
@@ -254,14 +281,14 @@ namespace Axion
 				resultTy = val.GetType();
 				Assert.AreEqual(type, resultTy);
 			}
-			for (int i = 0; i < OneValues.Length - 1; i++) {
+			for (int i = 0; i < OneValues.Length; i++) {
 				object oneVal = OneValues[i];
 				object val = TypeConvert.ChangeType(oneVal, typeof(bool));
 				Assert.IsNotNull(val);
 				Type type = val.GetType();
 				Assert.AreEqual(type, typeof(bool));
 			}
-			for (int i = 0; i < ZeroValues.Length - 1; i++) {
+			for (int i = 0; i < ZeroValues.Length; i++) {
 				object zeroVal = ZeroValues[i];
 				object val = TypeConvert.ChangeType(zeroVal, typeof(bool));
 				Assert.IsNotNull(val);
@@ -278,36 +305,6 @@ namespace Axion
 				object result = TypeConvert.ChangeType(value, type);
 				Assert.AreEqual(result, value);
 				Assert.AreEqual(result.GetType(), value.GetType());
-			}
-		}
-
-		[TestMethod]
-		public void TestBigInteger()
-		{
-			int floatIndex = NumericTypes.ToList().IndexOf(typeof(float));
-			for (int i = 0; i < MaxValues.Length; i++) {
-				object maxVal = MaxValues[i];
-				object minVal = MinValues[i];
-				object zeroVal = ZeroValues[i];
-				object oneVal = OneValues[i];
-				if (maxVal.GetType() != minVal.GetType())
-					throw new InvalidOperationException();
-				if (maxVal.GetType() != zeroVal.GetType())
-					throw new InvalidOperationException();
-				if (maxVal.GetType() != oneVal.GetType())
-					throw new InvalidOperationException();
-				TestAny(maxVal, typeof(BigInteger));
-				TestAny(minVal, typeof(BigInteger));
-				TestAny(zeroVal, typeof(BigInteger));
-				TestAny(oneVal, typeof(BigInteger));
-				if (i < floatIndex) {
-					if (TypeConvert.TryChangeType(maxVal, typeof(BigInteger), out object maxVal2)) {
-						Assert.AreEqual(maxVal.ToString(), maxVal2.ToString());
-					}
-					if (TypeConvert.TryChangeType(minVal, typeof(BigInteger), out object minVal2)) {
-						Assert.AreEqual(minVal.ToString(), minVal2.ToString());
-					}
-				}
 			}
 		}
 
@@ -329,21 +326,40 @@ namespace Axion
 
 		private void TestAny(object value, Type type)
 		{
-			try {
-				object result1 = TypeConvert.ChangeType(value, type);
-				object result2 = System.Convert.ChangeType(value, type);
-				Assert.AreEqual(result1, result2);
-			}
-			catch {
+			Type type1 = value.GetType();
+			if (TypeConvert.TryChangeType(value, type, out object result1)) {
+				object result2 = null;
 				try {
-					object result2 = System.Convert.ChangeType(value, type);
-					throw new InvalidOperationException();
+					result2 = System.Convert.ChangeType(value, type);
 				}
 				catch {
-
+					TypeCode typeCode = Type.GetTypeCode(type);
+					if (typeCode == TypeCode.Boolean && type1 == typeof(string)) {
+						string str = (string)value;
+						if (str == "0" || str == "1" || str.Equals("No", StringComparison.OrdinalIgnoreCase) || str.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+							return;
+					}
+					TypeCode typeCode2 = Type.GetTypeCode(type1);
+					Assert.IsTrue(typeCode == TypeCode.Object || typeCode2 == TypeCode.Object);
+					return;
 				}
+				Type type2 = result2.GetType();
+				Assert.AreEqual(result1, result2);
+				Assert.AreEqual(type, type2);
+			}
+			else {
+				object result2 = null;
+				try {
+					result2 = System.Convert.ChangeType(value, type);
+				}
+				catch {
+					return;
+				}
+				Type ty1 = value?.GetType();
+				Type ty2 = result2?.GetType();
+				TypeCode typeCode = Type.GetTypeCode(type);
+				Assert.AreEqual(typeCode, TypeCode.Object);
 			}
 		}
-
 	}
 }

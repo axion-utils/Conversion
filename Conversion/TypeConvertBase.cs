@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace Axion.Conversion
 {
-	public class TypeConvertBase
+	public abstract class TypeConvertBase
 	{
 		/// <summary>
 		/// Constructs a <see cref="TypeConvertBase"/> and copies the conversions from another <see cref="TypeConvertBase"/>.
@@ -488,10 +488,7 @@ namespace Axion.Conversion
 		/// <param name="value">The <see cref="object"/> to convert.</param>
 		/// <param name="input">The <see cref="Type"/> to convert from.</param>
 		/// <param name="output">The <see cref="Type"/> to convert to.</param>
-		protected virtual object OnFail(object value, Type input, Type output)
-		{
-			return null;
-		}
+		protected abstract object OnFail(object value, Type input, Type output);
 
 		/// <summary>
 		/// Attempts to convert an <see cref="object"/> to the specified <see cref="Type"/> and catches all exceptions.

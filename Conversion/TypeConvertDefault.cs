@@ -53,8 +53,9 @@ namespace Axion.Conversion
 				arr[(int)TypeCode.String] = tryParseConversions[i];
 				arr[i] = Conversions.None;
 			}
-			dbNullConverters[(int)TypeCode.String] = Conversions.ObjectToString;
-			outputConverters[(int)TypeCode.String] = (object value) => value?.ToString();
+			//dbNullConverters[(int)TypeCode.String] = Conversions.ObjectToString;
+			dbNullConverters[(int)TypeCode.DBNull] = Conversions.None;
+			outputConverters[(int)TypeCode.String] = Conversions.NullableToString;
 
 			// Boolean
 			//boolConverters[(int)TypeCode.Boolean] = Conversions.None;
@@ -209,7 +210,7 @@ namespace Axion.Conversion
 
 			// Single
 			singleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSingle;
-			singleConverters[(int)TypeCode.Char] = Conversions.CharToSingle;
+			singleConverters[(int)TypeCode.Char] = InvalidConversion;
 			singleConverters[(int)TypeCode.SByte] = Conversions.SByteToSingle;
 			singleConverters[(int)TypeCode.Byte] = Conversions.ByteToSingle;
 			singleConverters[(int)TypeCode.Int16] = Conversions.Int16ToSingle;
@@ -219,12 +220,12 @@ namespace Axion.Conversion
 			singleConverters[(int)TypeCode.Int64] = Conversions.Int64ToSingle;
 			singleConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToSingle;
 			//singleConverters[(int)TypeCode.Single] = Conversions.None;
-			singleConverters[(int)TypeCode.Double] = Conversions.DoubleToSingle;
+			singleConverters[(int)TypeCode.Double] = Conversions.DoubleToSingle_Unchecked;// Conversions.DoubleToSingle;
 			singleConverters[(int)TypeCode.Decimal] = Conversions.DecimalToSingle;
 
 			// Double
 			doubleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDouble;
-			doubleConverters[(int)TypeCode.Char] = Conversions.CharToDouble;
+			doubleConverters[(int)TypeCode.Char] = InvalidConversion;
 			doubleConverters[(int)TypeCode.SByte] = Conversions.SByteToDouble;
 			doubleConverters[(int)TypeCode.Byte] = Conversions.ByteToDouble;
 			doubleConverters[(int)TypeCode.Int16] = Conversions.Int16ToDouble;
@@ -239,7 +240,7 @@ namespace Axion.Conversion
 
 			// Decimal
 			decimalConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDecimal;
-			decimalConverters[(int)TypeCode.Char] = Conversions.CharToDecimal;
+			decimalConverters[(int)TypeCode.Char] = InvalidConversion;
 			decimalConverters[(int)TypeCode.SByte] = Conversions.SByteToDecimal;
 			decimalConverters[(int)TypeCode.Byte] = Conversions.ByteToDecimal;
 			decimalConverters[(int)TypeCode.Int16] = Conversions.Int16ToDecimal;
@@ -252,7 +253,6 @@ namespace Axion.Conversion
 			decimalConverters[(int)TypeCode.Double] = Conversions.DoubleToDecimal;
 			//decimalConverters[(int)TypeCode.Decimal] = Conversions.None;
 
-			LookupCache[Tuple.Create(typeof(string), typeof(BigInteger))] = Conversions.parseBigInteger;
 			LookupCache[Tuple.Create(typeof(string), typeof(DateTimeOffset))] = Conversions.parseDateTimeOffset;
 			LookupCache[Tuple.Create(typeof(string), typeof(Guid))] = Conversions.ParseGuid;
 			LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.parseTimeSpan;
@@ -290,6 +290,11 @@ namespace Axion.Conversion
 				return converter;
 			}
 			return this[inputTypeCode, outputTypeCode];
+		}
+
+		protected override object OnFail(object value, Type input, Type output)
+		{
+			return null;
 		}
 	}
 }
