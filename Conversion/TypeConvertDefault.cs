@@ -42,7 +42,6 @@ namespace Axion.Conversion
 				dbNullConverters[i] = InvalidConversion;
 				invalidConverters[i] = InvalidConversion;
 			}
-			Func<object, object>[] tryParseConversions = Conversions.TryParseConversions;
 			for (int i = 3; i < 17; i++) {
 				Func<object, object>[] arr = converterArray[i];
 				arr[(int)TypeCode.Empty] = InvalidConversion;
@@ -50,9 +49,13 @@ namespace Axion.Conversion
 				arr[(int)TypeCode.DBNull] = InvalidConversion;
 				arr[(int)TypeCode.DateTime] = InvalidConversion;
 				arr[17] = InvalidConversion;
-				arr[(int)TypeCode.String] = tryParseConversions[i];
 				arr[i] = Conversions.None;
 			}
+
+			// DateTime
+			dateTimeConverters[(int)TypeCode.String] = Conversions.tryParseDateTime;
+
+			// DBNull
 			//dbNullConverters[(int)TypeCode.String] = Conversions.ObjectToString;
 			dbNullConverters[(int)TypeCode.DBNull] = Conversions.None;
 			outputConverters[(int)TypeCode.String] = Conversions.NullableToString;
@@ -87,6 +90,7 @@ namespace Axion.Conversion
 			charConverters[(int)TypeCode.Single] = InvalidConversion;
 			charConverters[(int)TypeCode.Double] = InvalidConversion;
 			charConverters[(int)TypeCode.Decimal] = InvalidConversion;
+			charConverters[(int)TypeCode.String] = Conversions.TryParseChar;
 
 			// SByte
 			sbyteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSByte;
@@ -102,6 +106,7 @@ namespace Axion.Conversion
 			sbyteConverters[(int)TypeCode.Single] = Conversions.SingleToSByte;
 			sbyteConverters[(int)TypeCode.Double] = Conversions.DoubleToSByte;
 			sbyteConverters[(int)TypeCode.Decimal] = Conversions.DecimalToSByte;
+			sbyteConverters[(int)TypeCode.String] = Conversions.tryParseSByte;
 
 			// Byte
 			byteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToByte;
@@ -117,6 +122,7 @@ namespace Axion.Conversion
 			byteConverters[(int)TypeCode.Single] = Conversions.SingleToByte;
 			byteConverters[(int)TypeCode.Double] = Conversions.DoubleToByte;
 			byteConverters[(int)TypeCode.Decimal] = Conversions.DecimalToByte;
+			byteConverters[(int)TypeCode.String] = Conversions.tryParseByte;
 
 			// Int16
 			int16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt16;
@@ -132,6 +138,7 @@ namespace Axion.Conversion
 			int16Converters[(int)TypeCode.Single] = Conversions.SingleToInt16;
 			int16Converters[(int)TypeCode.Double] = Conversions.DoubleToInt16;
 			int16Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt16;
+			int16Converters[(int)TypeCode.String] = Conversions.tryParseInt16;
 
 			// UInt16
 			uint16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt16;
@@ -147,6 +154,7 @@ namespace Axion.Conversion
 			uint16Converters[(int)TypeCode.Single] = Conversions.SingleToUInt16;
 			uint16Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt16;
 			uint16Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt16;
+			uint16Converters[(int)TypeCode.String] = Conversions.tryParseUInt16;
 
 			// Int32
 			int32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt32;
@@ -162,6 +170,7 @@ namespace Axion.Conversion
 			int32Converters[(int)TypeCode.Single] = Conversions.SingleToInt32;
 			int32Converters[(int)TypeCode.Double] = Conversions.DoubleToInt32;
 			int32Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt32;
+			int32Converters[(int)TypeCode.String] = Conversions.tryParseInt32;
 
 			// UInt32
 			uint32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt32;
@@ -177,6 +186,7 @@ namespace Axion.Conversion
 			uint32Converters[(int)TypeCode.Single] = Conversions.SingleToUInt32;
 			uint32Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt32;
 			uint32Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt32;
+			uint32Converters[(int)TypeCode.String] = Conversions.tryParseUInt32;
 
 			// Int64
 			int64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt64;
@@ -192,6 +202,7 @@ namespace Axion.Conversion
 			int64Converters[(int)TypeCode.Single] = Conversions.SingleToInt64;
 			int64Converters[(int)TypeCode.Double] = Conversions.DoubleToInt64;
 			int64Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt64;
+			int64Converters[(int)TypeCode.String] = Conversions.tryParseInt64;
 
 			// UInt64
 			uint64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt64;
@@ -207,6 +218,7 @@ namespace Axion.Conversion
 			uint64Converters[(int)TypeCode.Single] = Conversions.SingleToUInt64;
 			uint64Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt64;
 			uint64Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt64;
+			uint64Converters[(int)TypeCode.String] = Conversions.tryParseUInt64;
 
 			// Single
 			singleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSingle;
@@ -220,8 +232,9 @@ namespace Axion.Conversion
 			singleConverters[(int)TypeCode.Int64] = Conversions.Int64ToSingle;
 			singleConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToSingle;
 			//singleConverters[(int)TypeCode.Single] = Conversions.None;
-			singleConverters[(int)TypeCode.Double] = Conversions.DoubleToSingle_Unchecked;// Conversions.DoubleToSingle;
+			singleConverters[(int)TypeCode.Double] = Conversions.DoubleToSingle_Unchecked;
 			singleConverters[(int)TypeCode.Decimal] = Conversions.DecimalToSingle;
+			singleConverters[(int)TypeCode.String] = Conversions.tryParseSingle;
 
 			// Double
 			doubleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDouble;
@@ -237,6 +250,7 @@ namespace Axion.Conversion
 			doubleConverters[(int)TypeCode.Single] = Conversions.SingleToDouble;
 			//doubleConverters[(int)TypeCode.Double] = Conversions.None;
 			doubleConverters[(int)TypeCode.Decimal] = Conversions.DecimalToDouble;
+			doubleConverters[(int)TypeCode.String] = Conversions.tryParseDouble;
 
 			// Decimal
 			decimalConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDecimal;
@@ -252,10 +266,7 @@ namespace Axion.Conversion
 			decimalConverters[(int)TypeCode.Single] = Conversions.SingleToDecimal;
 			decimalConverters[(int)TypeCode.Double] = Conversions.DoubleToDecimal;
 			//decimalConverters[(int)TypeCode.Decimal] = Conversions.None;
-
-			LookupCache[Tuple.Create(typeof(string), typeof(DateTimeOffset))] = Conversions.parseDateTimeOffset;
-			LookupCache[Tuple.Create(typeof(string), typeof(Guid))] = Conversions.ParseGuid;
-			LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.parseTimeSpan;
+			decimalConverters[(int)TypeCode.String] = Conversions.tryParseDecimal;
 		}
 
 		protected override Func<object, object> Lookup(Type input, Type output)

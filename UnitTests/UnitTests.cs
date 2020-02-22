@@ -13,12 +13,12 @@ namespace Axion
 		public readonly Type[] ParseTypes = new Type[] {
 			typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
 			typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal), typeof(string), typeof(DateTime),
-			 typeof(DateTimeOffset),  typeof(TimeSpan), typeof(Guid), typeof(DayOfWeek), typeof(DateTimeKind)
+			 typeof(DateTimeOffset),  typeof(TimeSpan), typeof(Guid), typeof(DayOfWeek), typeof(DateTimeKind), typeof(BigInteger),
 		};
 		public readonly object[] ParseValues = new object[] {
 			sbyte.MaxValue, byte.MaxValue, short.MaxValue, ushort.MaxValue, int.MaxValue, uint.MaxValue,
 			long.MaxValue, ulong.MaxValue, float.MaxValue, double.MaxValue, decimal.MaxValue, "abc", DateTime.Now,
-			DateTimeOffset.UtcNow, new TimeSpan(5, 3, 8), Guid.NewGuid(), DayOfWeek.Wednesday, DateTimeKind.Local
+			DateTimeOffset.UtcNow, new TimeSpan(5, 3, 8), Guid.NewGuid(), DayOfWeek.Wednesday, DateTimeKind.Local, (BigInteger) decimal.MaxValue
 		};
 		public readonly Type[] BasicTypes = new Type[] {
 			typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint),
