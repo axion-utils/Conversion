@@ -35,9 +35,6 @@ namespace Axion.Conversion
 		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
 		public TypeConvertDefault(bool threadSafe = true) : base(threadSafe)
 		{
-			// Output converters
-			this[TypeCode.String] = Conversions.NullableToString;
-
 			for (int i = 0; i < 19; i++) {
 				this[(TypeCode)i, TypeCode.DBNull] = InvalidConversion;
 				this[(TypeCode)i, TypeCode.DateTime] = InvalidConversion;
@@ -266,6 +263,12 @@ namespace Axion.Conversion
 
 			// DateTime
 			this[TypeCode.String, TypeCode.DateTime] = Conversions.tryParseDateTime;
+
+			// Custom converters
+			LookupCache[Tuple.Create(typeof(string), typeof(TimeSpan))] = Conversions.tryParseTimeSpan;
+
+			// Output converters
+			this[TypeCode.String] = Conversions.NullableToString;
 		}
 
 		/// <summary>

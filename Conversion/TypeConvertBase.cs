@@ -44,9 +44,9 @@ namespace Axion.Conversion
 				}
 				for (int i = 2; i < 19; i++) {
 					Func<object, object>[] arr = converterArray[i];
-					Func<object, object>[] blArr = copyFrom.converterArray[i];
+					Func<object, object>[] copyArr = copyFrom.converterArray[i];
 					for (int j = 0; j < 19; j++) {
-						arr[j] = blArr[j];
+						arr[j] = copyArr[j];
 					}
 				}
 			}
