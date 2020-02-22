@@ -25,7 +25,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Numerics;
 using System.Reflection;
 
 namespace Axion.Conversion
@@ -1991,10 +1990,11 @@ namespace Axion.Conversion
 		}
 
 		public static readonly Func<object, object> DateTimeToDateTimeOffset = (object value) => (DateTimeOffset)(DateTime)value;
+
 		public static readonly Func<object, object> DateTimeOffsetToDateTime = (object value) => ((DateTimeOffset)value).DateTime;
 
 		/// <summary>
-		/// Tries to parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No", null, and String.Empty.
+		/// Tries to parses a string as a <see langword="bool"/>. True values include "1", "True", and "Yes". False values include "0", "False", "No", and <see langword="null"/>.
 		/// </summary>
 		public static readonly Func<object, object> TryParseBooleanEx = (object value) => {
 			string str = (string)value;

@@ -35,9 +35,8 @@ namespace Axion.Conversion
 		/// Constructs a <see cref="TypeConvertBase"/> and copies the conversions from another <see cref="TypeConvertBase"/>.
 		/// </summary>
 		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
-		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
 		/// <param name="copyFrom">The <see cref="TypeConvertBase"/> to copy converters from.</param>
-		public TypeConvertBase(bool threadSafe, bool tryParseEnum, TypeConvertBase copyFrom) : this(threadSafe, tryParseEnum)
+		public TypeConvertBase(bool threadSafe, TypeConvertBase copyFrom) : this(threadSafe)
 		{
 			if (copyFrom != null) {
 				foreach (var kv in copyFrom.LookupCache) {
@@ -67,14 +66,11 @@ namespace Axion.Conversion
 		/// Constructs an empty <see cref="TypeConvertBase"/>.
 		/// </summary>
 		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
-		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
-		public TypeConvertBase(bool threadSafe, bool tryParseEnum)
+		public TypeConvertBase(bool threadSafe)
 		{
 			LookupCache = threadSafe
 				? new ConcurrentDictionary<Tuple<Type, Type>, Func<object, object>>()
 				: (IDictionary<Tuple<Type, Type>, Func<object, object>>)new Dictionary<Tuple<Type, Type>, Func<object, object>>();
-
-			TryParseEnum = tryParseEnum;
 
 			//outputConverters[(int)TypeCode.Empty] = null;
 			//outputConverters[(int)TypeCode.Object] = null;
@@ -120,82 +116,82 @@ namespace Axion.Conversion
 		/// <summary>
 		/// Unused functions which are only used to prevent exceptions.
 		/// </summary>
-		protected readonly Func<object, object>[] invalidConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] invalidConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="DBNull"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] dbNullConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] dbNullConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="bool"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] boolConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] boolConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="char"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] charConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] charConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="sbyte"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] sbyteConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] sbyteConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="byte"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] byteConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] byteConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="short"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] int16Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] int16Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="ushort"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] uint16Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] uint16Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="int"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] int32Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] int32Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="uint"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] uint32Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] uint32Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="long"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] int64Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] int64Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="ulong"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] uint64Converters = new Func<object, object>[19];
+		private readonly Func<object, object>[] uint64Converters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="float"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] singleConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] singleConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="double"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] doubleConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] doubleConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="decimal"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] decimalConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] decimalConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="string"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] dateTimeConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] dateTimeConverters = new Func<object, object>[19];
 		/// <summary>
 		/// Functions which convert from input (int)<see cref="TypeCode"/> to <see cref="string"/>.
 		/// </summary>
-		protected readonly Func<object, object>[] stringConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] stringConverters = new Func<object, object>[19];
 
 		/// <summary>
 		/// The function returned by <see cref="this[Type]"/> and called by methods such as <see cref="ToBoolean(object)"/>. It should not
 		/// support custom conversions of <see cref="TypeCode.Object"/> or enums.
 		/// </summary>
-		internal readonly Func<object, object>[] outputConverters = new Func<object, object>[19];
+		private readonly Func<object, object>[] outputConverters = new Func<object, object>[19];
 
 		/// <summary>
 		/// An array of converters which can be accessed using Typecodes via [output][input].
 		/// </summary>
-		internal readonly Func<object, object>[][] converterArray = new Func<object, object>[19][];
+		private readonly Func<object, object>[][] converterArray = new Func<object, object>[19][];
 
 		/// <summary>
 		/// The cache for custom conversions stored as Tuple.Create(input, output). This will include enum parsing, implicit/explicit casts
@@ -212,11 +208,6 @@ namespace Axion.Conversion
 		/// Determines whether the converter uses a <see cref="ConcurrentDictionary{TKey, TValue}"/> to store custom converters.
 		/// </summary>
 		protected bool IsThreadSafe => LookupCache is ConcurrentDictionary<Tuple<Type, Type>, Func<object, object>>;
-
-		/// <summary>
-		/// Determines if Enum.TryParse() or Enum.Parse() will be used.
-		/// </summary>
-		protected bool TryParseEnum { get; }
 
 		/// <summary>
 		/// The types with a <see cref="TypeCode"/>.
@@ -389,7 +380,7 @@ namespace Axion.Conversion
 				if (outputTypeCode == TypeCode.String)
 					return Conversions.ObjectToString;
 				if (inputTypeCode == TypeCode.String) {
-					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
+					converter = Conversions.TryParseEnum(output);
 					LookupCache[inout] = converter;
 				}
 				else
@@ -399,13 +390,22 @@ namespace Axion.Conversion
 		}
 
 		/// <summary>
-		/// Gets the function for the specified conversion.
+		/// Gets or sets the function for the specified conversion.
 		/// </summary>
 		/// <param name="output">The <see cref="TypeCode"/> of the input.</param>
 		/// <param name="input">The <see cref="TypeCode"/> of the output</param>
 		protected Func<object, object> this[TypeCode input, TypeCode output] {
 			get => converterArray[(int)output][(int)input];
 			set => converterArray[(int)output][(int)input] = value ?? InvalidConversion;
+		}
+
+		/// <summary>
+		/// Gets or sets the function for the specified conversion.
+		/// </summary>
+		/// <param name="output">The <see cref="TypeCode"/> of the input.</param>
+		protected Func<object, object> this[TypeCode output] {
+			get => outputConverters[(int)output];
+			set => outputConverters[(int)output] = value ?? InvalidConversion;
 		}
 
 		/// <summary>
@@ -486,7 +486,7 @@ namespace Axion.Conversion
 		}
 
 		/// <summary>
-		/// Called when a conversion fails except by <see cref="TryChangeType(object, Type, out object)"/>.
+		/// Called by <see cref="ChangeType(object, Type)"/> when a conversion returns <see langword="null"/>.
 		/// This should throw an exception or return a value. By default this returns <see langword="null/"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>

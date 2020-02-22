@@ -33,242 +33,247 @@ namespace Axion.Conversion
 		/// Constructs a <see cref="TypeConvertDefault"/> and populates the conversion table with the default values.
 		/// </summary>
 		/// <param name="threadSafe">Determines if custom conversions use a <see cref="ConcurrentDictionary{TKey, TValue}"/>.</param>
-		/// <param name="tryParseEnum">Determines if Enum.Parse() or Enum.TryParse() is used.</param>
-		public TypeConvertDefault(bool threadSafe = true, bool tryParseEnum = true) : base(threadSafe, tryParseEnum)
+		public TypeConvertDefault(bool threadSafe = true) : base(threadSafe)
 		{
+			// Output converters
+			this[TypeCode.String] = Conversions.NullableToString;
+
 			for (int i = 0; i < 19; i++) {
-				stringConverters[i] = Conversions.ObjectToString;
-				dateTimeConverters[i] = InvalidConversion;
-				dbNullConverters[i] = InvalidConversion;
-				invalidConverters[i] = InvalidConversion;
+				this[(TypeCode)i, TypeCode.DBNull] = InvalidConversion;
+				this[(TypeCode)i, TypeCode.DateTime] = InvalidConversion;
+				this[(TypeCode)i, TypeCode.String] = Conversions.ObjectToString;
+				this[(TypeCode)i, (TypeCode)17] = InvalidConversion;
 			}
 			for (int i = 3; i < 17; i++) {
-				Func<object, object>[] arr = converterArray[i];
-				arr[(int)TypeCode.Empty] = InvalidConversion;
-				arr[(int)TypeCode.Object] = InvalidConversion;
-				arr[(int)TypeCode.DBNull] = InvalidConversion;
-				arr[(int)TypeCode.DateTime] = InvalidConversion;
-				arr[17] = InvalidConversion;
-				arr[i] = Conversions.None;
+				this[TypeCode.Empty, (TypeCode)i] = InvalidConversion;
+				this[TypeCode.Object, (TypeCode)i] = InvalidConversion;
+				this[TypeCode.DBNull, (TypeCode)i] = InvalidConversion;
+				this[TypeCode.DateTime, (TypeCode)i] = InvalidConversion;
+				this[(TypeCode)17, (TypeCode)i] = InvalidConversion;
+				this[(TypeCode)i, (TypeCode)i] = Conversions.None;
 			}
 
-			// DateTime
-			dateTimeConverters[(int)TypeCode.String] = Conversions.tryParseDateTime;
-
 			// DBNull
-			//dbNullConverters[(int)TypeCode.String] = Conversions.ObjectToString;
-			dbNullConverters[(int)TypeCode.DBNull] = Conversions.None;
-			outputConverters[(int)TypeCode.String] = Conversions.NullableToString;
+			this[TypeCode.DBNull, TypeCode.DBNull] = Conversions.None;
 
 			// Boolean
-			//boolConverters[(int)TypeCode.Boolean] = Conversions.None;
-			boolConverters[(int)TypeCode.Char] = InvalidConversion;
-			boolConverters[(int)TypeCode.SByte] = Conversions.SByteToBoolean;
-			boolConverters[(int)TypeCode.Byte] = Conversions.ByteToBoolean;
-			boolConverters[(int)TypeCode.Int16] = Conversions.Int16ToBoolean;
-			boolConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToBoolean;
-			boolConverters[(int)TypeCode.Int32] = Conversions.Int32ToBoolean;
-			boolConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToBoolean;
-			boolConverters[(int)TypeCode.Int64] = Conversions.Int64ToBoolean;
-			boolConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToBoolean;
-			boolConverters[(int)TypeCode.Single] = Conversions.SingleToBoolean;
-			boolConverters[(int)TypeCode.Double] = Conversions.DoubleToBoolean;
-			boolConverters[(int)TypeCode.Decimal] = Conversions.DecimalToBoolean;
-			boolConverters[(int)TypeCode.String] = Conversions.TryParseBooleanEx;
+			//this[TypeCode.Boolean, TypeCode.Boolean] = Conversions.None;
+			this[TypeCode.Char, TypeCode.Boolean] = InvalidConversion;
+			this[TypeCode.SByte, TypeCode.Boolean] = Conversions.SByteToBoolean;
+			this[TypeCode.Byte, TypeCode.Boolean] = Conversions.ByteToBoolean;
+			this[TypeCode.Int16, TypeCode.Boolean] = Conversions.Int16ToBoolean;
+			this[TypeCode.UInt16, TypeCode.Boolean] = Conversions.UInt16ToBoolean;
+			this[TypeCode.Int32, TypeCode.Boolean] = Conversions.Int32ToBoolean;
+			this[TypeCode.UInt32, TypeCode.Boolean] = Conversions.UInt32ToBoolean;
+			this[TypeCode.Int64, TypeCode.Boolean] = Conversions.Int64ToBoolean;
+			this[TypeCode.UInt64, TypeCode.Boolean] = Conversions.UInt64ToBoolean;
+			this[TypeCode.Single, TypeCode.Boolean] = Conversions.SingleToBoolean;
+			this[TypeCode.Double, TypeCode.Boolean] = Conversions.DoubleToBoolean;
+			this[TypeCode.Decimal, TypeCode.Boolean] = Conversions.DecimalToBoolean;
+			this[TypeCode.String, TypeCode.Boolean] = Conversions.TryParseBooleanEx;
 
 			// Char
-			charConverters[(int)TypeCode.Boolean] = InvalidConversion;
-			//charConverters[(int)TypeCode.Char] = Conversions.CharToChar;
-			charConverters[(int)TypeCode.SByte] = Conversions.SByteToChar;
-			charConverters[(int)TypeCode.Byte] = Conversions.ByteToChar;
-			charConverters[(int)TypeCode.Int16] = Conversions.Int16ToChar;
-			charConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToChar;
-			charConverters[(int)TypeCode.Int32] = Conversions.Int32ToChar;
-			charConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToChar;
-			charConverters[(int)TypeCode.Int64] = Conversions.Int64ToChar;
-			charConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToChar;
-			charConverters[(int)TypeCode.Single] = InvalidConversion;
-			charConverters[(int)TypeCode.Double] = InvalidConversion;
-			charConverters[(int)TypeCode.Decimal] = InvalidConversion;
-			charConverters[(int)TypeCode.String] = Conversions.TryParseChar;
+			this[TypeCode.Boolean, TypeCode.Char] = InvalidConversion;
+			//this[TypeCode.Char, TypeCode.Char] = Conversions.None;
+			this[TypeCode.SByte, TypeCode.Char] = Conversions.SByteToChar;
+			this[TypeCode.Byte, TypeCode.Char] = Conversions.ByteToChar;
+			this[TypeCode.Int16, TypeCode.Char] = Conversions.Int16ToChar;
+			this[TypeCode.UInt16, TypeCode.Char] = Conversions.UInt16ToChar;
+			this[TypeCode.Int32, TypeCode.Char] = Conversions.Int32ToChar;
+			this[TypeCode.UInt32, TypeCode.Char] = Conversions.UInt32ToChar;
+			this[TypeCode.Int64, TypeCode.Char] = Conversions.Int64ToChar;
+			this[TypeCode.UInt64, TypeCode.Char] = Conversions.UInt64ToChar;
+			this[TypeCode.Single, TypeCode.Char] = InvalidConversion;
+			this[TypeCode.Double, TypeCode.Char] = InvalidConversion;
+			this[TypeCode.Decimal, TypeCode.Char] = InvalidConversion;
+			this[TypeCode.String, TypeCode.Char] = Conversions.TryParseChar;
 
 			// SByte
-			sbyteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSByte;
-			sbyteConverters[(int)TypeCode.Char] = Conversions.CharToSByte;
-			//sbyteConverters[(int)TypeCode.SByte] = Conversions.None;
-			sbyteConverters[(int)TypeCode.Byte] = Conversions.ByteToSByte;
-			sbyteConverters[(int)TypeCode.Int16] = Conversions.Int16ToSByte;
-			sbyteConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToSByte;
-			sbyteConverters[(int)TypeCode.Int32] = Conversions.Int32ToSByte;
-			sbyteConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToSByte;
-			sbyteConverters[(int)TypeCode.Int64] = Conversions.Int64ToSByte;
-			sbyteConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToSByte;
-			sbyteConverters[(int)TypeCode.Single] = Conversions.SingleToSByte;
-			sbyteConverters[(int)TypeCode.Double] = Conversions.DoubleToSByte;
-			sbyteConverters[(int)TypeCode.Decimal] = Conversions.DecimalToSByte;
-			sbyteConverters[(int)TypeCode.String] = Conversions.tryParseSByte;
+			this[TypeCode.Boolean, TypeCode.SByte] = Conversions.BooleanToSByte;
+			this[TypeCode.Char, TypeCode.SByte] = Conversions.CharToSByte;
+			//this[TypeCode.SByte, TypeCode.SByte] = Conversions.None;
+			this[TypeCode.Byte, TypeCode.SByte] = Conversions.ByteToSByte;
+			this[TypeCode.Int16, TypeCode.SByte] = Conversions.Int16ToSByte;
+			this[TypeCode.UInt16, TypeCode.SByte] = Conversions.UInt16ToSByte;
+			this[TypeCode.Int32, TypeCode.SByte] = Conversions.Int32ToSByte;
+			this[TypeCode.UInt32, TypeCode.SByte] = Conversions.UInt32ToSByte;
+			this[TypeCode.Int64, TypeCode.SByte] = Conversions.Int64ToSByte;
+			this[TypeCode.UInt64, TypeCode.SByte] = Conversions.UInt64ToSByte;
+			this[TypeCode.Single, TypeCode.SByte] = Conversions.SingleToSByte;
+			this[TypeCode.Double, TypeCode.SByte] = Conversions.DoubleToSByte;
+			this[TypeCode.Decimal, TypeCode.SByte] = Conversions.DecimalToSByte;
+			this[TypeCode.String, TypeCode.SByte] = Conversions.tryParseSByte;
 
 			// Byte
-			byteConverters[(int)TypeCode.Boolean] = Conversions.BooleanToByte;
-			byteConverters[(int)TypeCode.Char] = Conversions.CharToByte;
-			byteConverters[(int)TypeCode.SByte] = Conversions.SByteToByte;
-			//byteConverters[(int)TypeCode.Byte] = Conversions.None;
-			byteConverters[(int)TypeCode.Int16] = Conversions.Int16ToByte;
-			byteConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToByte;
-			byteConverters[(int)TypeCode.Int32] = Conversions.Int32ToByte;
-			byteConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToByte;
-			byteConverters[(int)TypeCode.Int64] = Conversions.Int64ToByte;
-			byteConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToByte;
-			byteConverters[(int)TypeCode.Single] = Conversions.SingleToByte;
-			byteConverters[(int)TypeCode.Double] = Conversions.DoubleToByte;
-			byteConverters[(int)TypeCode.Decimal] = Conversions.DecimalToByte;
-			byteConverters[(int)TypeCode.String] = Conversions.tryParseByte;
+			this[TypeCode.Boolean, TypeCode.Byte] = Conversions.BooleanToByte;
+			this[TypeCode.Char, TypeCode.Byte] = Conversions.CharToByte;
+			this[TypeCode.SByte, TypeCode.Byte] = Conversions.SByteToByte;
+			//this[TypeCode.Byte, TypeCode.Byte] = Conversions.None;
+			this[TypeCode.Int16, TypeCode.Byte] = Conversions.Int16ToByte;
+			this[TypeCode.UInt16, TypeCode.Byte] = Conversions.UInt16ToByte;
+			this[TypeCode.Int32, TypeCode.Byte] = Conversions.Int32ToByte;
+			this[TypeCode.UInt32, TypeCode.Byte] = Conversions.UInt32ToByte;
+			this[TypeCode.Int64, TypeCode.Byte] = Conversions.Int64ToByte;
+			this[TypeCode.UInt64, TypeCode.Byte] = Conversions.UInt64ToByte;
+			this[TypeCode.Single, TypeCode.Byte] = Conversions.SingleToByte;
+			this[TypeCode.Double, TypeCode.Byte] = Conversions.DoubleToByte;
+			this[TypeCode.Decimal, TypeCode.Byte] = Conversions.DecimalToByte;
+			this[TypeCode.String, TypeCode.Byte] = Conversions.tryParseByte;
 
 			// Int16
-			int16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt16;
-			int16Converters[(int)TypeCode.Char] = Conversions.CharToInt16;
-			int16Converters[(int)TypeCode.SByte] = Conversions.SByteToInt16;
-			int16Converters[(int)TypeCode.Byte] = Conversions.ByteToInt16;
-			//int16Converters[(int)TypeCode.Int16] = Conversions.None;
-			int16Converters[(int)TypeCode.UInt16] = Conversions.UInt16ToInt16;
-			int16Converters[(int)TypeCode.Int32] = Conversions.Int32ToInt16;
-			int16Converters[(int)TypeCode.UInt32] = Conversions.UInt32ToInt16;
-			int16Converters[(int)TypeCode.Int64] = Conversions.Int64ToInt16;
-			int16Converters[(int)TypeCode.UInt64] = Conversions.UInt64ToInt16;
-			int16Converters[(int)TypeCode.Single] = Conversions.SingleToInt16;
-			int16Converters[(int)TypeCode.Double] = Conversions.DoubleToInt16;
-			int16Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt16;
-			int16Converters[(int)TypeCode.String] = Conversions.tryParseInt16;
+			this[TypeCode.Boolean, TypeCode.Int16] = Conversions.BooleanToInt16;
+			this[TypeCode.Char, TypeCode.Int16] = Conversions.CharToInt16;
+			this[TypeCode.SByte, TypeCode.Int16] = Conversions.SByteToInt16;
+			this[TypeCode.Byte, TypeCode.Int16] = Conversions.ByteToInt16;
+			//this[TypeCode.Int16, TypeCode.Int16] = Conversions.None;
+			this[TypeCode.UInt16, TypeCode.Int16] = Conversions.UInt16ToInt16;
+			this[TypeCode.Int32, TypeCode.Int16] = Conversions.Int32ToInt16;
+			this[TypeCode.UInt32, TypeCode.Int16] = Conversions.UInt32ToInt16;
+			this[TypeCode.Int64, TypeCode.Int16] = Conversions.Int64ToInt16;
+			this[TypeCode.UInt64, TypeCode.Int16] = Conversions.UInt64ToInt16;
+			this[TypeCode.Single, TypeCode.Int16] = Conversions.SingleToInt16;
+			this[TypeCode.Double, TypeCode.Int16] = Conversions.DoubleToInt16;
+			this[TypeCode.Decimal, TypeCode.Int16] = Conversions.DecimalToInt16;
+			this[TypeCode.String, TypeCode.Int16] = Conversions.tryParseInt16;
 
 			// UInt16
-			uint16Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt16;
-			uint16Converters[(int)TypeCode.Char] = Conversions.CharToUInt16;
-			uint16Converters[(int)TypeCode.SByte] = Conversions.SByteToUInt16;
-			uint16Converters[(int)TypeCode.Byte] = Conversions.ByteToUInt16;
-			uint16Converters[(int)TypeCode.Int16] = Conversions.Int16ToUInt16;
-			//uint16Converters[(int)TypeCode.UInt16] = Conversions.None;
-			uint16Converters[(int)TypeCode.Int32] = Conversions.Int32ToUInt16;
-			uint16Converters[(int)TypeCode.UInt32] = Conversions.UInt32ToUInt16;
-			uint16Converters[(int)TypeCode.Int64] = Conversions.Int64ToUInt16;
-			uint16Converters[(int)TypeCode.UInt64] = Conversions.UInt64ToUInt16;
-			uint16Converters[(int)TypeCode.Single] = Conversions.SingleToUInt16;
-			uint16Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt16;
-			uint16Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt16;
-			uint16Converters[(int)TypeCode.String] = Conversions.tryParseUInt16;
+			this[TypeCode.Boolean, TypeCode.UInt16] = Conversions.BooleanToUInt16;
+			this[TypeCode.Char, TypeCode.UInt16] = Conversions.CharToUInt16;
+			this[TypeCode.SByte, TypeCode.UInt16] = Conversions.SByteToUInt16;
+			this[TypeCode.Byte, TypeCode.UInt16] = Conversions.ByteToUInt16;
+			this[TypeCode.Int16, TypeCode.UInt16] = Conversions.Int16ToUInt16;
+			//this[TypeCode.UInt16, TypeCode.UInt16] = Conversions.None;
+			this[TypeCode.Int32, TypeCode.UInt16] = Conversions.Int32ToUInt16;
+			this[TypeCode.UInt32, TypeCode.UInt16] = Conversions.UInt32ToUInt16;
+			this[TypeCode.Int64, TypeCode.UInt16] = Conversions.Int64ToUInt16;
+			this[TypeCode.UInt64, TypeCode.UInt16] = Conversions.UInt64ToUInt16;
+			this[TypeCode.Single, TypeCode.UInt16] = Conversions.SingleToUInt16;
+			this[TypeCode.Double, TypeCode.UInt16] = Conversions.DoubleToUInt16;
+			this[TypeCode.Decimal, TypeCode.UInt16] = Conversions.DecimalToUInt16;
+			this[TypeCode.String, TypeCode.UInt16] = Conversions.tryParseUInt16;
 
 			// Int32
-			int32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt32;
-			int32Converters[(int)TypeCode.Char] = Conversions.CharToInt32;
-			int32Converters[(int)TypeCode.SByte] = Conversions.SByteToInt32;
-			int32Converters[(int)TypeCode.Byte] = Conversions.ByteToInt32;
-			int32Converters[(int)TypeCode.Int16] = Conversions.Int16ToInt32;
-			int32Converters[(int)TypeCode.UInt16] = Conversions.UInt16ToInt32;
-			//int32Converters[(int)TypeCode.Int32] = Conversions.None;
-			int32Converters[(int)TypeCode.UInt32] = Conversions.UInt32ToInt32;
-			int32Converters[(int)TypeCode.Int64] = Conversions.Int64ToInt32;
-			int32Converters[(int)TypeCode.UInt64] = Conversions.UInt64ToInt32;
-			int32Converters[(int)TypeCode.Single] = Conversions.SingleToInt32;
-			int32Converters[(int)TypeCode.Double] = Conversions.DoubleToInt32;
-			int32Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt32;
-			int32Converters[(int)TypeCode.String] = Conversions.tryParseInt32;
+			this[TypeCode.Boolean, TypeCode.Int32] = Conversions.BooleanToInt32;
+			this[TypeCode.Char, TypeCode.Int32] = Conversions.CharToInt32;
+			this[TypeCode.SByte, TypeCode.Int32] = Conversions.SByteToInt32;
+			this[TypeCode.Byte, TypeCode.Int32] = Conversions.ByteToInt32;
+			this[TypeCode.Int16, TypeCode.Int32] = Conversions.Int16ToInt32;
+			this[TypeCode.UInt16, TypeCode.Int32] = Conversions.UInt16ToInt32;
+			//this[TypeCode.Int32, TypeCode.Int32] = Conversions.None;
+			this[TypeCode.UInt32, TypeCode.Int32] = Conversions.UInt32ToInt32;
+			this[TypeCode.Int64, TypeCode.Int32] = Conversions.Int64ToInt32;
+			this[TypeCode.UInt64, TypeCode.Int32] = Conversions.UInt64ToInt32;
+			this[TypeCode.Single, TypeCode.Int32] = Conversions.SingleToInt32;
+			this[TypeCode.Double, TypeCode.Int32] = Conversions.DoubleToInt32;
+			this[TypeCode.Decimal, TypeCode.Int32] = Conversions.DecimalToInt32;
+			this[TypeCode.String, TypeCode.Int32] = Conversions.tryParseInt32;
 
 			// UInt32
-			uint32Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt32;
-			uint32Converters[(int)TypeCode.Char] = Conversions.CharToUInt32;
-			uint32Converters[(int)TypeCode.SByte] = Conversions.SByteToUInt32;
-			uint32Converters[(int)TypeCode.Byte] = Conversions.ByteToUInt32;
-			uint32Converters[(int)TypeCode.Int16] = Conversions.Int16ToUInt32;
-			uint32Converters[(int)TypeCode.UInt16] = Conversions.UInt16ToUInt32;
-			uint32Converters[(int)TypeCode.Int32] = Conversions.Int32ToUInt32;
-			//uint32Converters[(int)TypeCode.UInt32] = Conversions.None;
-			uint32Converters[(int)TypeCode.Int64] = Conversions.Int64ToUInt32;
-			uint32Converters[(int)TypeCode.UInt64] = Conversions.UInt64ToUInt32;
-			uint32Converters[(int)TypeCode.Single] = Conversions.SingleToUInt32;
-			uint32Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt32;
-			uint32Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt32;
-			uint32Converters[(int)TypeCode.String] = Conversions.tryParseUInt32;
+			this[TypeCode.Boolean, TypeCode.UInt32] = Conversions.BooleanToUInt32;
+			this[TypeCode.Char, TypeCode.UInt32] = Conversions.CharToUInt32;
+			this[TypeCode.SByte, TypeCode.UInt32] = Conversions.SByteToUInt32;
+			this[TypeCode.Byte, TypeCode.UInt32] = Conversions.ByteToUInt32;
+			this[TypeCode.Int16, TypeCode.UInt32] = Conversions.Int16ToUInt32;
+			this[TypeCode.UInt16, TypeCode.UInt32] = Conversions.UInt16ToUInt32;
+			this[TypeCode.Int32, TypeCode.UInt32] = Conversions.Int32ToUInt32;
+			//this[TypeCode.UInt32, TypeCode.UInt32] = Conversions.None;
+			this[TypeCode.Int64, TypeCode.UInt32] = Conversions.Int64ToUInt32;
+			this[TypeCode.UInt64, TypeCode.UInt32] = Conversions.UInt64ToUInt32;
+			this[TypeCode.Single, TypeCode.UInt32] = Conversions.SingleToUInt32;
+			this[TypeCode.Double, TypeCode.UInt32] = Conversions.DoubleToUInt32;
+			this[TypeCode.Decimal, TypeCode.UInt32] = Conversions.DecimalToUInt32;
+			this[TypeCode.String, TypeCode.UInt32] = Conversions.tryParseUInt32;
 
 			// Int64
-			int64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToInt64;
-			int64Converters[(int)TypeCode.Char] = Conversions.CharToInt64;
-			int64Converters[(int)TypeCode.SByte] = Conversions.SByteToInt64;
-			int64Converters[(int)TypeCode.Byte] = Conversions.ByteToInt64;
-			int64Converters[(int)TypeCode.Int16] = Conversions.Int16ToInt64;
-			int64Converters[(int)TypeCode.UInt16] = Conversions.UInt16ToInt64;
-			int64Converters[(int)TypeCode.Int32] = Conversions.Int32ToInt64;
-			int64Converters[(int)TypeCode.UInt32] = Conversions.UInt32ToInt64;
-			//int64Converters[(int)TypeCode.Int64] = Conversions.None;
-			int64Converters[(int)TypeCode.UInt64] = Conversions.UInt64ToInt64;
-			int64Converters[(int)TypeCode.Single] = Conversions.SingleToInt64;
-			int64Converters[(int)TypeCode.Double] = Conversions.DoubleToInt64;
-			int64Converters[(int)TypeCode.Decimal] = Conversions.DecimalToInt64;
-			int64Converters[(int)TypeCode.String] = Conversions.tryParseInt64;
+			this[TypeCode.Boolean, TypeCode.Int64] = Conversions.BooleanToInt64;
+			this[TypeCode.Char, TypeCode.Int64] = Conversions.CharToInt64;
+			this[TypeCode.SByte, TypeCode.Int64] = Conversions.SByteToInt64;
+			this[TypeCode.Byte, TypeCode.Int64] = Conversions.ByteToInt64;
+			this[TypeCode.Int16, TypeCode.Int64] = Conversions.Int16ToInt64;
+			this[TypeCode.UInt16, TypeCode.Int64] = Conversions.UInt16ToInt64;
+			this[TypeCode.Int32, TypeCode.Int64] = Conversions.Int32ToInt64;
+			this[TypeCode.UInt32, TypeCode.Int64] = Conversions.UInt32ToInt64;
+			//this[TypeCode.Int64, TypeCode.Int64] = Conversions.None;
+			this[TypeCode.UInt64, TypeCode.Int64] = Conversions.UInt64ToInt64;
+			this[TypeCode.Single, TypeCode.Int64] = Conversions.SingleToInt64;
+			this[TypeCode.Double, TypeCode.Int64] = Conversions.DoubleToInt64;
+			this[TypeCode.Decimal, TypeCode.Int64] = Conversions.DecimalToInt64;
+			this[TypeCode.String, TypeCode.Int64] = Conversions.tryParseInt64;
 
 			// UInt64
-			uint64Converters[(int)TypeCode.Boolean] = Conversions.BooleanToUInt64;
-			uint64Converters[(int)TypeCode.Char] = Conversions.CharToUInt64;
-			uint64Converters[(int)TypeCode.SByte] = Conversions.SByteToUInt64;
-			uint64Converters[(int)TypeCode.Byte] = Conversions.ByteToUInt64;
-			uint64Converters[(int)TypeCode.Int16] = Conversions.Int16ToUInt64;
-			uint64Converters[(int)TypeCode.UInt16] = Conversions.UInt16ToUInt64;
-			uint64Converters[(int)TypeCode.Int32] = Conversions.Int32ToUInt64;
-			uint64Converters[(int)TypeCode.UInt32] = Conversions.UInt32ToUInt64;
-			uint64Converters[(int)TypeCode.Int64] = Conversions.Int64ToUInt64;
-			//uint64Converters[(int)TypeCode.UInt64] = Conversions.None;
-			uint64Converters[(int)TypeCode.Single] = Conversions.SingleToUInt64;
-			uint64Converters[(int)TypeCode.Double] = Conversions.DoubleToUInt64;
-			uint64Converters[(int)TypeCode.Decimal] = Conversions.DecimalToUInt64;
-			uint64Converters[(int)TypeCode.String] = Conversions.tryParseUInt64;
+			this[TypeCode.Boolean, TypeCode.UInt64] = Conversions.BooleanToUInt64;
+			this[TypeCode.Char, TypeCode.UInt64] = Conversions.CharToUInt64;
+			this[TypeCode.SByte, TypeCode.UInt64] = Conversions.SByteToUInt64;
+			this[TypeCode.Byte, TypeCode.UInt64] = Conversions.ByteToUInt64;
+			this[TypeCode.Int16, TypeCode.UInt64] = Conversions.Int16ToUInt64;
+			this[TypeCode.UInt16, TypeCode.UInt64] = Conversions.UInt16ToUInt64;
+			this[TypeCode.Int32, TypeCode.UInt64] = Conversions.Int32ToUInt64;
+			this[TypeCode.UInt32, TypeCode.UInt64] = Conversions.UInt32ToUInt64;
+			this[TypeCode.Int64, TypeCode.UInt64] = Conversions.Int64ToUInt64;
+			//this[TypeCode.UInt64, TypeCode.UInt64] = Conversions.None;
+			this[TypeCode.Single, TypeCode.UInt64] = Conversions.SingleToUInt64;
+			this[TypeCode.Double, TypeCode.UInt64] = Conversions.DoubleToUInt64;
+			this[TypeCode.Decimal, TypeCode.UInt64] = Conversions.DecimalToUInt64;
+			this[TypeCode.String, TypeCode.UInt64] = Conversions.tryParseUInt64;
 
 			// Single
-			singleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToSingle;
-			singleConverters[(int)TypeCode.Char] = InvalidConversion;
-			singleConverters[(int)TypeCode.SByte] = Conversions.SByteToSingle;
-			singleConverters[(int)TypeCode.Byte] = Conversions.ByteToSingle;
-			singleConverters[(int)TypeCode.Int16] = Conversions.Int16ToSingle;
-			singleConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToSingle;
-			singleConverters[(int)TypeCode.Int32] = Conversions.Int32ToSingle;
-			singleConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToSingle;
-			singleConverters[(int)TypeCode.Int64] = Conversions.Int64ToSingle;
-			singleConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToSingle;
-			//singleConverters[(int)TypeCode.Single] = Conversions.None;
-			singleConverters[(int)TypeCode.Double] = Conversions.DoubleToSingle_Unchecked;
-			singleConverters[(int)TypeCode.Decimal] = Conversions.DecimalToSingle;
-			singleConverters[(int)TypeCode.String] = Conversions.tryParseSingle;
+			this[TypeCode.Boolean, TypeCode.Single] = Conversions.BooleanToSingle;
+			this[TypeCode.Char, TypeCode.Single] = InvalidConversion;
+			this[TypeCode.SByte, TypeCode.Single] = Conversions.SByteToSingle;
+			this[TypeCode.Byte, TypeCode.Single] = Conversions.ByteToSingle;
+			this[TypeCode.Int16, TypeCode.Single] = Conversions.Int16ToSingle;
+			this[TypeCode.UInt16, TypeCode.Single] = Conversions.UInt16ToSingle;
+			this[TypeCode.Int32, TypeCode.Single] = Conversions.Int32ToSingle;
+			this[TypeCode.UInt32, TypeCode.Single] = Conversions.UInt32ToSingle;
+			this[TypeCode.Int64, TypeCode.Single] = Conversions.Int64ToSingle;
+			this[TypeCode.UInt64, TypeCode.Single] = Conversions.UInt64ToSingle;
+			//this[TypeCode.Single, TypeCode.Single] = Conversions.None;
+			this[TypeCode.Double, TypeCode.Single] = Conversions.DoubleToSingle_Unchecked;
+			this[TypeCode.Decimal, TypeCode.Single] = Conversions.DecimalToSingle;
+			this[TypeCode.String, TypeCode.Single] = Conversions.tryParseSingle;
 
 			// Double
-			doubleConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDouble;
-			doubleConverters[(int)TypeCode.Char] = InvalidConversion;
-			doubleConverters[(int)TypeCode.SByte] = Conversions.SByteToDouble;
-			doubleConverters[(int)TypeCode.Byte] = Conversions.ByteToDouble;
-			doubleConverters[(int)TypeCode.Int16] = Conversions.Int16ToDouble;
-			doubleConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToDouble;
-			doubleConverters[(int)TypeCode.Int32] = Conversions.Int32ToDouble;
-			doubleConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToDouble;
-			doubleConverters[(int)TypeCode.Int64] = Conversions.Int64ToDouble;
-			doubleConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToDouble;
-			doubleConverters[(int)TypeCode.Single] = Conversions.SingleToDouble;
-			//doubleConverters[(int)TypeCode.Double] = Conversions.None;
-			doubleConverters[(int)TypeCode.Decimal] = Conversions.DecimalToDouble;
-			doubleConverters[(int)TypeCode.String] = Conversions.tryParseDouble;
+			this[TypeCode.Boolean, TypeCode.Double] = Conversions.BooleanToDouble;
+			this[TypeCode.Char, TypeCode.Double] = InvalidConversion;
+			this[TypeCode.SByte, TypeCode.Double] = Conversions.SByteToDouble;
+			this[TypeCode.Byte, TypeCode.Double] = Conversions.ByteToDouble;
+			this[TypeCode.Int16, TypeCode.Double] = Conversions.Int16ToDouble;
+			this[TypeCode.UInt16, TypeCode.Double] = Conversions.UInt16ToDouble;
+			this[TypeCode.Int32, TypeCode.Double] = Conversions.Int32ToDouble;
+			this[TypeCode.UInt32, TypeCode.Double] = Conversions.UInt32ToDouble;
+			this[TypeCode.Int64, TypeCode.Double] = Conversions.Int64ToDouble;
+			this[TypeCode.UInt64, TypeCode.Double] = Conversions.UInt64ToDouble;
+			this[TypeCode.Single, TypeCode.Double] = Conversions.SingleToDouble;
+			//this[TypeCode.Double, TypeCode.Double] = Conversions.None;
+			this[TypeCode.Decimal, TypeCode.Double] = Conversions.DecimalToDouble;
+			this[TypeCode.String, TypeCode.Double] = Conversions.tryParseDouble;
 
 			// Decimal
-			decimalConverters[(int)TypeCode.Boolean] = Conversions.BooleanToDecimal;
-			decimalConverters[(int)TypeCode.Char] = InvalidConversion;
-			decimalConverters[(int)TypeCode.SByte] = Conversions.SByteToDecimal;
-			decimalConverters[(int)TypeCode.Byte] = Conversions.ByteToDecimal;
-			decimalConverters[(int)TypeCode.Int16] = Conversions.Int16ToDecimal;
-			decimalConverters[(int)TypeCode.UInt16] = Conversions.UInt16ToDecimal;
-			decimalConverters[(int)TypeCode.Int32] = Conversions.Int32ToDecimal;
-			decimalConverters[(int)TypeCode.UInt32] = Conversions.UInt32ToDecimal;
-			decimalConverters[(int)TypeCode.Int64] = Conversions.Int64ToDecimal;
-			decimalConverters[(int)TypeCode.UInt64] = Conversions.UInt64ToDecimal;
-			decimalConverters[(int)TypeCode.Single] = Conversions.SingleToDecimal;
-			decimalConverters[(int)TypeCode.Double] = Conversions.DoubleToDecimal;
-			//decimalConverters[(int)TypeCode.Decimal] = Conversions.None;
-			decimalConverters[(int)TypeCode.String] = Conversions.tryParseDecimal;
+			this[TypeCode.Boolean, TypeCode.Decimal] = Conversions.BooleanToDecimal;
+			this[TypeCode.Char, TypeCode.Decimal] = InvalidConversion;
+			this[TypeCode.SByte, TypeCode.Decimal] = Conversions.SByteToDecimal;
+			this[TypeCode.Byte, TypeCode.Decimal] = Conversions.ByteToDecimal;
+			this[TypeCode.Int16, TypeCode.Decimal] = Conversions.Int16ToDecimal;
+			this[TypeCode.UInt16, TypeCode.Decimal] = Conversions.UInt16ToDecimal;
+			this[TypeCode.Int32, TypeCode.Decimal] = Conversions.Int32ToDecimal;
+			this[TypeCode.UInt32, TypeCode.Decimal] = Conversions.UInt32ToDecimal;
+			this[TypeCode.Int64, TypeCode.Decimal] = Conversions.Int64ToDecimal;
+			this[TypeCode.UInt64, TypeCode.Decimal] = Conversions.UInt64ToDecimal;
+			this[TypeCode.Single, TypeCode.Decimal] = Conversions.SingleToDecimal;
+			this[TypeCode.Double, TypeCode.Decimal] = Conversions.DoubleToDecimal;
+			//this[TypeCode.Decimal, TypeCode.Decimal] = Conversions.None;
+			this[TypeCode.String, TypeCode.Decimal] = Conversions.tryParseDecimal;
+
+			// DateTime
+			this[TypeCode.String, TypeCode.DateTime] = Conversions.tryParseDateTime;
 		}
 
+		/// <summary>
+		/// Creates a function for the given conversion where neither input and output are an <see cref="Enum"/>.
+		/// </summary>
+		/// <param name="input">The <see cref="Type"/> to convert from.</param>
+		/// <param name="output">The <see cref="Type"/> to convert to.</param>
+		/// <returns>The function that converts an object of the given <see cref="Type"/> to the specified <see cref="Type"/>.</returns>
 		protected override Func<object, object> Lookup(Type input, Type output)
 		{
 			if (output == typeof(string))
@@ -289,6 +294,13 @@ namespace Axion.Conversion
 			return converter;
 		}
 
+		/// <summary>
+		/// Creates a function for the given conversion which includes at least one <see cref="Enum"/>.
+		/// </summary>
+		/// <param name="input">The <see cref="Type"/> to convert from.</param>
+		/// <param name="inputTypeCode">The <see cref="TypeCode"/> of <paramref name="input"/>.</param>
+		/// <param name="output">The <see cref="Type"/> to convert to.</param>
+		/// <param name="outputTypeCode">The <see cref="TypeCode"/> of <paramref name="output"/>.</param>
 		protected override Func<object, object> LookupEnum(Type input, TypeCode inputTypeCode, Type output, TypeCode outputTypeCode)
 		{
 			if (outputTypeCode == TypeCode.String)
@@ -296,7 +308,7 @@ namespace Axion.Conversion
 			if (inputTypeCode == TypeCode.String) {
 				Tuple<Type, Type> inout = Tuple.Create(input, output);
 				if (!LookupCache.TryGetValue(inout, out Func<object, object> converter)) {
-					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
+					converter = Conversions.TryParseEnum(output);
 					LookupCache[inout] = converter;
 				}
 				return converter;
@@ -304,6 +316,13 @@ namespace Axion.Conversion
 			return this[inputTypeCode, outputTypeCode];
 		}
 
+		/// <summary>
+		/// Called by <see cref="TypeConvertBase.ChangeType(object, Type)"/> when a conversion returns <see langword="null"/>.
+		/// This should throw an exception or return a value. By default this returns <see langword="null/"/>.
+		/// </summary>
+		/// <param name="value">The <see cref="object"/> to convert.</param>
+		/// <param name="input">The <see cref="Type"/> to convert from.</param>
+		/// <param name="output">The <see cref="Type"/> to convert to.</param>
 		protected override object OnFail(object value, Type input, Type output)
 		{
 			return null;

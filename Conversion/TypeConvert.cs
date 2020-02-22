@@ -32,7 +32,7 @@ namespace Axion.Conversion
 		/// <summary>
 		/// The default <see cref="TypeConvert"/> that throws an exception for failed conversions.
 		/// </summary>
-		public static readonly TypeConvertDefault Default = new TypeConvertDefault(true, true);
+		public static readonly TypeConvertDefault Default = new TypeConvertDefault(true);
 
 		/// <summary>
 		/// Converts an <see cref="object"/> to the specified <see cref="Type"/>.
