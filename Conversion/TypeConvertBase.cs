@@ -26,6 +26,9 @@ using System.Linq;
 
 namespace Axion.Conversion
 {
+	/// <summary>
+	/// Creates functions that can convert any <see cref="object"/> to any <see cref="Type"/>.
+	/// </summary>
 	public abstract class TypeConvertBase
 	{
 		/// <summary>
@@ -383,9 +386,9 @@ namespace Axion.Conversion
 		{
 			Tuple<Type, Type> inout = Tuple.Create(input, output);
 			if (!LookupCache.TryGetValue(inout, out Func<object, object> converter)) {
-				if (output == typeof(string))
+				if (outputTypeCode == TypeCode.String)
 					return Conversions.ObjectToString;
-				if (input == typeof(string)) {
+				if (inputTypeCode == TypeCode.String) {
 					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
 					LookupCache[inout] = converter;
 				}
@@ -419,7 +422,8 @@ namespace Axion.Conversion
 					return Conversions.ObjectToString;
 				if (output.IsAssignableFrom(input))
 					return Conversions.None;
-				converter = Conversions.ImplicitCast(input, output)
+				converter = (input == typeof(string) ? Conversions.TryParse(output) : null)
+					?? Conversions.ImplicitCast(input, output)
 					?? Conversions.ExplicitCast(input, output)
 					?? Conversions.TypeConverter(input, output);
 				if (converter != null)
@@ -483,7 +487,7 @@ namespace Axion.Conversion
 
 		/// <summary>
 		/// Called when a conversion fails except by <see cref="TryChangeType(object, Type, out object)"/>.
-		/// This should throw an exception or return a value.
+		/// This should throw an exception or return a value. By default this returns <see langword="null/"/>.
 		/// </summary>
 		/// <param name="value">The <see cref="object"/> to convert.</param>
 		/// <param name="input">The <see cref="Type"/> to convert from.</param>
@@ -529,11 +533,11 @@ namespace Axion.Conversion
 				if (input == typeof(object))
 					return this[output];
 				TypeCode outputTypeCode = Type.GetTypeCode(output);
-				if (outputTypeCode > TypeCode.Object) {
+				if (outputTypeCode != TypeCode.Object) {
 					TypeCode inputTypeCode = Type.GetTypeCode(input);
 					if (output.IsEnum || input.IsEnum)
 						return LookupEnum(input, inputTypeCode, output, outputTypeCode);
-					if (inputTypeCode > TypeCode.Object)
+					if (inputTypeCode != TypeCode.Object)
 						return converterArray[(int)outputTypeCode][(int)inputTypeCode];
 				}
 				else if (input.IsEnum)
@@ -568,7 +572,7 @@ namespace Axion.Conversion
 				if (output == typeof(object))
 					return Conversions.None;
 				TypeCode typeCode = Type.GetTypeCode(output);
-				if (typeCode > TypeCode.Object) {
+				if (typeCode != TypeCode.Object) {
 					if (output.IsEnum)
 						return (value) => ToEnum(value, output, typeCode);
 					else

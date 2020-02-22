@@ -27,6 +27,9 @@ namespace Axion
 			value = TypeConvert.Default.ChangeType(DayOfWeek.Friday.ToString(), typeof(DayOfWeek));
 			Console.WriteLine(value + " " + value.GetType().Name); // Friday DayOfWeek
 
+			value = TypeConvert.ChangeType("1", typeof(BigInteger));
+			Console.WriteLine(value + " " + value.GetType().Name); // 1 BigInteger
+
 			Console.ReadKey();
 		}
 	}

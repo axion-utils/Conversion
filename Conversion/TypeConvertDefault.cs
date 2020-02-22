@@ -20,14 +20,14 @@
 #endregion
 
 using System;
-using System.Numerics;
+using System.Collections.Concurrent;
 
 namespace Axion.Conversion
 {
 	/// <summary>
-	/// TypeConvert which has been optimized for standard lookups.
+	/// <see cref="TypeConvertBase"/> which is nearly identical to <see cref="System.Convert"/>. Lookups have been optimized to be faster.
 	/// </summary>
-	public class TypeConvertDefault : TypeConvertBase
+	public sealed class TypeConvertDefault : TypeConvertBase
 	{
 		/// <summary>
 		/// Constructs a <see cref="TypeConvertDefault"/> and populates the conversion table with the default values.
@@ -266,7 +266,8 @@ namespace Axion.Conversion
 				return Conversions.None;
 			Tuple<Type, Type> inout = Tuple.Create(input, output);
 			if (!LookupCache.TryGetValue(inout, out Func<object, object> converter)) {
-				converter = Conversions.ImplicitCast(input, output)
+				converter = (input == typeof(string) ? Conversions.TryParse(output) : null)
+					?? Conversions.ImplicitCast(input, output)
 					?? Conversions.ExplicitCast(input, output)
 					?? Conversions.TypeConverter(input, output);
 				if (converter != null)
@@ -279,9 +280,9 @@ namespace Axion.Conversion
 
 		protected override Func<object, object> LookupEnum(Type input, TypeCode inputTypeCode, Type output, TypeCode outputTypeCode)
 		{
-			if (output == typeof(string))
+			if (outputTypeCode == TypeCode.String)
 				return Conversions.ObjectToString;
-			if (input == typeof(string)) {
+			if (inputTypeCode == TypeCode.String) {
 				Tuple<Type, Type> inout = Tuple.Create(input, output);
 				if (!LookupCache.TryGetValue(inout, out Func<object, object> converter)) {
 					converter = TryParseEnum ? Conversions.TryParseEnum(output) : Conversions.ParseEnum(output);
