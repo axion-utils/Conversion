@@ -233,24 +233,19 @@ namespace Axion.Conversion
 			if (outputTypeCode <= TypeCode.Object)
 				throw new NotSupportedException("CreateConverterFromType does not support TypeCode: " + outputTypeCode.ToString());
 			return (object value) => {
-				Type input;
 				if (value == null)
-					input = null;
-				else {
-					input = value.GetType();
-					TypeCode inputTypeCode = Type.GetTypeCode(input);
-					Func<object, object> converter;
-					if (inputTypeCode == TypeCode.Object)
-						converter = Lookup(input, output);
-					else if (input.IsEnum)
-						converter = LookupEnum(input, inputTypeCode, input, inputTypeCode);
-					else
-						converter = this[inputTypeCode, outputTypeCode];
-					object result = converter(value);
-					if (result != null)
-						return result;
-				}
-				return OnFail(value, input, output);
+					return null;
+				Type input = value.GetType();
+				TypeCode inputTypeCode = Type.GetTypeCode(input);
+				Func<object, object> converter;
+				if (inputTypeCode == TypeCode.Object)
+					converter = Lookup(input, output);
+				else if (input.IsEnum)
+					converter = LookupEnum(input, inputTypeCode, input, inputTypeCode);
+				else
+					converter = this[inputTypeCode, outputTypeCode];
+				object result = converter(value);
+				return result;
 			};
 		}
 
@@ -352,18 +347,11 @@ namespace Axion.Conversion
 
 		private object ToEnum(object value, Type output, TypeCode outputTypeCode)
 		{
-			Type input;
-			if (value == null)
-				input = null;
-			else {
-				input = value.GetType();
-				TypeCode inputTypeCode = Type.GetTypeCode(input);
-				Func<object, object> converter = LookupEnum(input, inputTypeCode, output, outputTypeCode);
-				object result = converter(value);
-				if (result != null)
-					return result;
-			}
-			return OnFail(value, input, output);
+			Type input = value.GetType();
+			TypeCode inputTypeCode = Type.GetTypeCode(input);
+			Func<object, object> converter = LookupEnum(input, inputTypeCode, output, outputTypeCode);
+			object result = converter(value);
+			return result;
 		}
 
 		/// <summary>
@@ -439,17 +427,10 @@ namespace Axion.Conversion
 		/// </summary>
 		private object ConvertCustom(object value, Type output)
 		{
-			Type input;
-			if (value == null)
-				input = null;
-			else {
-				input = value.GetType();
-				Func<object, object> converter = input.IsEnum ? LookupEnum(input, Type.GetTypeCode(input), output, TypeCode.Object) : Lookup(input, output);
-				object result = converter(value);
-				if (result != null)
-					return result;
-			}
-			return OnFail(value, input, output);
+			Type input = value.GetType();
+			Func<object, object> converter = input.IsEnum ? LookupEnum(input, Type.GetTypeCode(input), output, TypeCode.Object) : Lookup(input, output);
+			object result = converter(value);
+			return result;
 		}
 
 		/// <summary>
